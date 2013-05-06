@@ -324,9 +324,9 @@
                   dropdown += '  <li class="glg-autocomplete-item glg-autocomplete-focus" role="presentation">';
                   entityDataHit = true;
                 }
-                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" tabindex="-1">' + entities[i] + '</a>';
+                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" tabindex="-1">' + entities[i].key + '</a>';
                 dropdown += '  </li>';
-                if (entities[i].toLowerCase() == target.value.toLowerCase()) {
+                if (entities[i].value.toLowerCase() == target.value.toLowerCase()) {
                   drawAddToItem = false;
                 }
               }
