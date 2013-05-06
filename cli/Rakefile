@@ -1,0 +1,26 @@
+require "bundler"
+Bundler.setup
+
+$LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
+require 'rake/clean'
+require 'rubygems'
+require 'rubygems/package_task'
+require 'rdoc/task'
+
+task :build do
+  system "bundle install"
+  system "gem update --system"
+  system "gem update bundler"
+  system "gem build tasc.gemspec"
+end
+
+task :clean do
+  system "rm tasc-*.*.*.gem"
+end
+
+spec = eval(File.read('tasc.gemspec'))
+
+Gem::PackageTask.new(spec) do |pkg|
+end
+
+task :default => [:clean,:build]

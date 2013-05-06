@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+
+$: << File.expand_path(File.dirname(File.realpath(__FILE__)) + '/../lib')
+
+require 'gli'
+require 'tasc'
+
+include GLI::App
+
+program_desc 'a command line app for managing lists of terms available for auto-complete from the TrieService'
+version Tasc::VERSION
+preserve_argv
+
+# config_file stored in .tasc subdirectory of user's home directory
+# ruby handles finding it, so it's platform agnostic
+CFG_FILE = config_file('.tasc/servers.yaml')
+
+
+# **********************************
+# List Global Switches here, but command-specific switches in the ./command/<command>.rb
+# Switches are value-less options passed to the command
+# Example: --lb would specify that the command is to operate on the Load Balancer
+# desc 'Describe your switch here'
+# switch [:s,:switch]
+
+# ***********************************
+# List Global Flags here, but command-specific flags in the ./command/<command>.rb
+# Flags are name value pairs passed to the command
+# Example: -h 10.20.41.256 tells the command to operate against this specific server
+# desc 'Describe your flag here'
+# arg_name 'name of flag arg'
+# flag [:f,:flag]
+
+pre do |global,command,options,args|
+  # Pre logic here
+  # Return true to proceed; false to abort and not call the
+  # chosen command
+  # Use skips_pre before a command to skip this block
+  # on that command only
+
+  # Create directory and config if they don't already exist
+  @conf_dir = File.join(File.expand_path(ENV['HOME']),'.tasc')
+  #ap "config directory: " + @conf_dir
+  unless File.exists?(CFG_FILE)
+    unless Dir.exists?(@conf_dir) then Dir.mkdir @conf_dir end
+
+    tasc_conf = YAML::Store.new(CFG_FILE)
+    tasc_conf.transaction do
+      tasc_conf["current_server"] = "default"
+      tasc_conf["default"] = "localhost:8080"
+    end
+  end
+  true
+end
+
+post do |global,command,options,args|
+  # Post logic here
+  # Use skips_post before a command to skip this
+  # block on that command only
+end
+
+# Initialization for each command
+around do |global,command,options,args,code|
+  #ap "Executing around ..."
+  if (File.exist?(CFG_FILE))
+    $tasc_conf = YAML::load(File.open(CFG_FILE, 'r'))
+    $server = $tasc_conf['current_server']
+    if ( $tasc_conf.has_key?($server) )
+      $host = $tasc_conf[$server]
+      code.call
+    else
+      exit_now!("No server label '#{$server}' configured")
+    end
+  end
+end
+
+
+# put commands into the './lib/tasc' subdirectory
+commands_from 'tasc'
+
+exit run(ARGV)

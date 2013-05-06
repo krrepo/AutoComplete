@@ -1,0 +1,6 @@
+.DS_Store
+trieservice.jar
+target/
+.project
+.classpath
+.metadata/

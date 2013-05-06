@@ -1,0 +1,168 @@
+.glg-autocomplete-list {
+  position: fixed;  
+  -webkit-background-clip: border-box;
+  -webkit-background-origin: padding-box;
+  -webkit-background-size: auto;
+  -webkit-border-image: none;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-color: rgb(255, 255, 255);
+  background-origin: padding-box;
+  background-size: auto;
+  border-bottom-color: rgb(170, 170, 170);
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-left-color: rgb(170, 170, 170);
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-right-color: rgb(170, 170, 170);
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-top-color: rgb(170, 170, 170);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  color: rgb(34, 34, 34);
+  cursor: default;
+  display: block;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  left: 5px;
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  outline-color: rgb(34, 34, 34);
+  outline-style: none;
+  outline-width: 0px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 2px;
+  position: absolute;
+  top: 29px;
+  z-index: 100;
+}
+
+.glg-autocomplete-anchor {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  color: rgb(34, 34, 34);
+  cursor: default;
+  display: block;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  line-height: 16px;
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+  min-height: 0px;
+  padding-bottom: 2px;
+  padding-left: 4.390625px;
+  padding-right: 4.390625px;
+  padding-top: 2px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.glg-autocomplete-category {
+  color: rgb(34, 34, 34);
+  cursor: default;
+  display: list-item;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  height: 16px;
+  line-height: 16px;
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+  margin-bottom: 2.200000047683716px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 8.800000190734863px;
+  padding-bottom: 2.1875px;
+  padding-left: 4.390625px;
+  padding-right: 4.390625px;
+  padding-top: 2.1875px;
+  text-align: left;
+}
+
+.glg-autocomplete-focus {
+  -webkit-background-clip: border-box;
+  -webkit-background-origin: padding-box;
+  -webkit-background-size: auto;
+  -webkit-border-image: none;
+  background-color: rgb(218, 218, 218);
+  border-bottom-color: rgb(153, 153, 153);
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-left-color: rgb(153, 153, 153);
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-right-color: rgb(153, 153, 153);
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-top-color: rgb(153, 153, 153);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  color: rgb(33, 33, 33);
+  cursor: default;
+  display: block;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  line-height: 16px;
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+  margin-bottom: -1px;
+  margin-left: -1px;
+  margin-right: -1px;
+  margin-top: -1px;
+  min-height: 0px;
+  padding-bottom: 2px;
+  padding-right: 4.390625px;
+  padding-top: 2px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.glg-autocomplete-multiSelect {
+  -webkit-padding-start: 0px;
+  position: absolute;
+  list-style-type: none;
+  padding: 0em;
+  margin: 0em;
+}
+
+.glg-autocomplete-multiSelectElement {
+  border: solid grey 1px;
+  border-radius: 0.2em;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+  float: left;
+}
+
+.glg-autocomplete-multiSelectElementClose {
+  padding-left: 0.5em;
+  cursor: pointer;
+  float: right;
+}
