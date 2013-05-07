@@ -3,3 +3,4 @@
 .csv
 Gemfile.lock
 .gem
+.DS_STORE
