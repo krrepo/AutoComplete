@@ -17,7 +17,7 @@
 <form class="form-horizontal">
     <div class="control-group">
         <label  class="control-label" for="states" class="span4">States (Markup) &nbsp; </label>
-        <input name="states_markup" id="states_markup" glg-autocomplete-entities="state:States" glg-autocomplete-source="//localhost:8080/typeahead/trie/" glg-autocomplete-updateSource="//localhost:8080/typeahead/increment/" glg-autocomplete-multiSelect="false">
+        <input name="states_markup" id="states_markup" glg-autocomplete-entities="state:States" glg-autocomplete-source="//localhost:4567/typeahead/trie/" glg-autocomplete-updateSource="//localhost:4567/typeahead/increment/" glg-autocomplete-multiSelect="true">
     </div>
     <div class="control-group">
         <label class="control-label" for="states">States (Method) &nbsp; </label>
@@ -44,9 +44,9 @@
       'org':'Organizations',
       'state':'States'
     },
-    'source':'//localhost:8080/typeahead/trie/',
+    'source':'//localhost:4567/typeahead/trie/',
     'element':document.getElementById('someInputElement'),
-    'updateSource'='//localhost:8080/typeahead/increment/'
+    'updateSource'='//localhost:4567/typeahead/increment/'
   }];
   glg.autocomplete(options);
 &lt;/script>
@@ -54,7 +54,7 @@
 
 <p>The second, via markup declarations:</p>
 <pre>
-&lt;input name="cm_names" id="cm_names" <strong>glg-autocomplete-entities</strong>="org:Organizations;state:States" <strong>glg-autocomplete-source</strong>="//localhost:8080/typeahead/trie/" <strong>glg-autocomplete-updateSource</strong>="//localhost:8080/typeahead/update/">
+&lt;input name="cm_names" id="cm_names" <strong>glg-autocomplete-entities</strong>="org:Organizations;state:States" <strong>glg-autocomplete-source</strong>="//localhost:4567/typeahead/trie/" <strong>glg-autocomplete-updateSource</strong>="//localhost:4567/typeahead/update/">
 </pre>
 <p>Note that there is no glg-autocomplete-element attribute in the above code, as this is implicity included.</p>
 
@@ -63,13 +63,13 @@
   options = [
   {
     'entities':{'state':'States'},
-    'source':'//localhost:8080/typeahead/trie/',
+    'source':'//localhost:4567/typeahead/trie/',
     'element':document.getElementById('states_method')
   },{
     'entities':{'state':'States'},
-    'source':'//localhost:8080/typeahead/trie/',
+    'source':'//localhost:4567/typeahead/trie/',
     'element':document.getElementById('states_multiselect'),
-    //'updateSource':'//localhost:8080/typeahead/increment/',
+    //'updateSource':'//localhost:4567/typeahead/increment/',
     'multiSelect':true
   }];
   glg.autocomplete(options);

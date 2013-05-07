@@ -14,7 +14,7 @@
     }
     
     function getAutocompleteAttributes(input) {
-      var autocompleteAttributeMap = {'entities':'glg-autocomplete-entities','source':'glg-autocomplete-source','updateSource':'glg-autocomplete-updateSource'};
+      var autocompleteAttributeMap = {'entities':'glg-autocomplete-entities','source':'glg-autocomplete-source','updateSource':'glg-autocomplete-updateSource','multiSelect':'glg-autocomplete-multiselect'};
       var autocompleteAttributes;
       for(var key in autocompleteAttributeMap) {
         if (autocompleteAttributeMap.hasOwnProperty(key)) {
@@ -23,7 +23,12 @@
             if (typeof autocompleteAttributes === 'undefined') {
               autocompleteAttributes = {};
             }
-            autocompleteAttributes[key] = input.getAttribute(autocompleteAttributeMap[key]);        
+            if ( key === "multiSelect") {
+              var myBoolean = attribute === "true";
+              autocompleteAttributes[key] = myBoolean;
+            } else {
+              autocompleteAttributes[key] = attribute;
+            }
           }  
         }
       }
@@ -384,13 +389,8 @@
        if (input.hasAttribute("data-glg-dropdown-input")) {
          var inputKey = input.getAttribute("data-glg-dropdown-input");
          if (inputKey == dropdownKey) {
-           for ( var i = 0; i < options.length; i++ ){
-             if ( input.id === options[i].element.id ) {
-               if (typeof options[i].multiSelect != 'undefined') {
-                 multiSelect = options[i].multiSelect
-               }
-             }
-           }
+           var options = getOptions(input);
+           multiSelect = options.multiSelect
            if (multiSelect) {
              // Add the Clicked Item to the MultiSelect
              var multiSelectItems = getMultiSelectItems(input);
@@ -521,11 +521,10 @@
               var inputKey = list.getAttribute("data-glg-dropdown-input");
               var multiSelectItem = inputs[list.getAttribute("data-glg-dropdown-input")];
               if (inputKey === dropdownKey) {
-                for ( var l = 0; l < options.length; l++ ){
-                  if ( multiSelectItem.id === options[l].element.id ) {
-                    if (typeof options[l].multiSelect != 'undefined' && options[l].multiSelect ) {
-                      updateMultiSelectSpacing(multiSelectItem, node);
-                    }
+                var options = getOptions(multiSelectItem);
+                if ( multiSelectItem.id === options.element.id ) {
+                  if (typeof options.multiSelect != 'undefined' && options.multiSelect ) {
+                    updateMultiSelectSpacing(multiSelectItem, node);
                   }
                 }
               }
