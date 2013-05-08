@@ -56,6 +56,7 @@ public class TrieResource {
 	static final Pattern quot = Pattern.compile("\"");
 	static final Pattern punct= Pattern.compile("\\p{Punct}");
 	static final Pattern diacritics = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+	static final Pattern dynamic = Pattern.compile("_dynamic", Pattern.CASE_INSENSITIVE);
 	//static final long SAVE_FREQUENCY = 1000 * 60 * 60 * 2;
 	//test save every 3 minutes
 	long SAVE_FREQUENCY = 1000 * 60 * 60;
@@ -94,13 +95,23 @@ public class TrieResource {
 		try{
 			for (Map.Entry<String, Trie> entry : tries.entrySet()){
 				Trie t = entry.getValue();
+				String filename = PATH+entry.getKey();
+				if (!t.isNonMutable()){
+					filename+="_dynamic";
+				}
 				
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(new File(PATH+entry.getKey()+".csv.gz")))));
+				//delete .csv files and keep around .csv.gz files
+				File f = new File(filename+".csv");
+				if (f.exists()){
+					f.delete();
+				}
+				
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(new File(filename+".csv.gz")))));
 				writeCSV(t.getTrie(), writer);
 				writer.close();
 				
 				if (t.isCache()){
-					t.writeCache(new File(PATH+entry.getKey()+".obj"));
+					t.writeCache(new File(filename+".obj"));
 				}
 			}
 			logger.info("Saved tries");
@@ -121,8 +132,13 @@ public class TrieResource {
 			}
 			
 			String name = f.getName();
+			boolean isDynamic = false;
 			if (name.contains(".")){
 				name = name.substring(0, name.indexOf('.'));
+			}
+			if (dynamic.matcher(name).find()){
+				name = name.substring(0, name.indexOf('_'));
+				isDynamic = true;
 			}
 			
 			Trie vals = new Trie(NUM_RESULTS);
@@ -151,13 +167,16 @@ public class TrieResource {
 				String cachename = f.getName();
 				cachename = cachename.substring(0, f.getName().indexOf('.'));
 				cachename += ".obj";
-
+				path+=cachename;
+				
 				File obj = new File(path);
 				if (obj.exists()){
 					//load cache file
 					vals.loadCache(obj);
 				}
-				
+				if (!isDynamic){
+					vals.setNonMutable();
+				}
 				tries.put(name, vals);
 			}
 		}catch(Exception e){

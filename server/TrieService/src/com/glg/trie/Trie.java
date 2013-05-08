@@ -18,6 +18,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 
 public class Trie {
+	boolean nonMutable = false;
 	int maxSize = -1;
 	//LRUMap<String, Integer>
 	LRUMap cache;
@@ -42,69 +43,79 @@ public class Trie {
 	}
 	
 	public void insert(String key, String value, int rank){
-		if (key.length() > 0 && value.length() > 0){
-			if (maxSize > -1){
-				//see if there's enough space
-				if (cache.isFull()){
-					//remove element
-					String remove = (String) cache.lastKey();
-					cache.remove(remove);
-					tree.remove(remove);
+		if (!nonMutable){
+			if (key.length() > 0 && value.length() > 0){
+				if (maxSize > -1){
+					//see if there's enough space
+					if (cache.isFull()){
+						//remove element
+						String remove = (String) cache.lastKey();
+						cache.remove(remove);
+						tree.remove(remove);
+					}
+					cache.put(key, 1);
 				}
-				cache.put(key, 1);
+				tree.remove(key);
+				tree.put(key, value, rank);
 			}
-			tree.remove(key);
-			tree.put(key, value, rank);
 		}
 	}
 	
 	public void insert(String key, String value){
-		if (key.length() > 0 && value.length() > 0){
-			if (maxSize > -1){
-				//see if there's enough space
-				if (cache.isFull()){
-					//remove element
-					String remove = (String) cache.lastKey();
-					cache.remove(remove);
-					tree.remove(remove);
+		if (!nonMutable){
+			if (key.length() > 0 && value.length() > 0){
+				if (maxSize > -1){
+					//see if there's enough space
+					if (cache.isFull()){
+						//remove element
+						String remove = (String) cache.lastKey();
+						cache.remove(remove);
+						tree.remove(remove);
+					}
+					cache.put(key, 1);
 				}
-				cache.put(key, 1);
+				tree.put(key, value, 1);
 			}
-			tree.put(key, value, 1);
 		}
 	}
 
 	public void updateRank(String key, String value, int rank){
-		if (maxSize > -1){
-			if (cache.containsKey(key)){
-				cache.put(key, 1);
-			}
-		}
-		tree.put(key, value, rank);
-	}
-	
-	public void incrementRank(String key){
-		try{
-			int currWeight = 0;
-			String value = "";
-			currWeight = tree.getWeight(key);
-			value = tree.getSuggestions(key).getValue();
-			currWeight++;
-			tree.put(key, value, currWeight);
-			
+		if (!nonMutable){
 			if (maxSize > -1){
 				if (cache.containsKey(key)){
 					cache.put(key, 1);
 				}
 			}
-		}catch (Exception e){}
+			tree.put(key, value, rank);
+		}
+	}
+	
+	public void incrementRank(String key){
+		if (!nonMutable){
+			try{
+				int currWeight = 0;
+				String value = "";
+				currWeight = tree.getWeight(key);
+				value = tree.getSuggestions(key).getValue();
+				currWeight++;
+				tree.put(key, value, currWeight);
+				
+				if (maxSize > -1){
+					if (cache.containsKey(key)){
+						cache.put(key, 1);
+					}
+				}
+			}catch (Exception e){}
+		}
 	}
 	
 	public void remove(String suggestion){
-		if (maxSize > -1){
-			cache.remove(suggestion);
+		if (!nonMutable){
+			if (maxSize > -1){
+				cache.remove(suggestion);
+			}
+			tree.remove(suggestion);
 		}
-		tree.remove(suggestion);
 	}
 	
 	public int getSize(){
@@ -141,7 +152,6 @@ public class Trie {
 				n.getValue() +"\t"+ 
 				n.getWeight());
 		}
-		
 	}
 	
 	public boolean writeCache(File f){
@@ -166,6 +176,14 @@ public class Trie {
 			return false;
 		}
 		return true;
+	}
+	
+	public void setNonMutable(){
+		nonMutable = true;
+	}
+	
+	public boolean isNonMutable(){
+		return nonMutable;
 	}
 
 	public boolean isCache(){
