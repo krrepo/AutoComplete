@@ -96,7 +96,32 @@ public class Trie {
 				int currWeight = 0;
 				String value = "";
 				currWeight = tree.getWeight(key);
+				if (currWeight == -1){
+					return;
+				}
+				
 				value = tree.getSuggestions(key).getValue();
+				currWeight++;
+				tree.put(key, value, currWeight);
+				
+				if (maxSize > -1){
+					if (cache.containsKey(key)){
+						cache.put(key, 1);
+					}
+				}
+			}catch (Exception e){}
+		}
+	}
+	
+	public void insertOrIncrement(String key, String value){
+		if (!nonMutable){
+			try{
+				int currWeight = 0;
+				currWeight = tree.getWeight(key);
+				if (currWeight == -1){
+					//empty node add it
+					currWeight = 0;
+				}
 				currWeight++;
 				tree.put(key, value, currWeight);
 				
@@ -134,6 +159,8 @@ public class Trie {
 		}
 		return out;
 	}
+	
+	
 	
 	public SuggestTree getTrie(){
 		return tree;

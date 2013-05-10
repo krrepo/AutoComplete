@@ -339,14 +339,14 @@ public class TrieResource {
 	}
 	
 	@GET
-	@Path("/increment")
-	public Response incrementRank(@QueryParam("entity") String entity, @QueryParam("key") String key){
+	@Path("/selected")
+	public Response selected(@QueryParam("entity") String entity, @QueryParam("value") String value){
 		if (entity!=null && entity.length() > 0  && tries.containsKey(entity)){
 			Trie trie = tries.get(entity);
-			if (key!=null && key.length() > 0){
-				String cleanedKey = clean(key);
-				trie.incrementRank(cleanedKey);
-				logger.info("Incrementing:" + entity + " ");
+			if (value!=null && value.length() > 0){
+				String cleanedKey = clean(value);
+				trie.insertOrIncrement(cleanedKey, value);
+				logger.info("selecting:" + entity + " ");
 				return Response.ok().build();
 			}
 		}
