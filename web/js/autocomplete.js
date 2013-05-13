@@ -1,57 +1,8 @@
 (function() {
   
 // Autocomplete Core
-  var autocomplete = function(passedOptions) {  
-
-    // Configure those elements marked with the data- attributes
-    window.onload = function() {
-      var options = getOptions();
-      init(options);   
-    };
-
-    window.onresize = function(event) {
-      positionAllDropdowns();    
-    }
-    
-    function getAutocompleteAttributes(input) {
-      var autocompleteAttributeMap = {'entities':'glg-autocomplete-entities','source':'glg-autocomplete-source','updateSource':'glg-autocomplete-updateSource','multiSelect':'glg-autocomplete-multiselect'};
-      var autocompleteAttributes;
-      for(var key in autocompleteAttributeMap) {
-        if (autocompleteAttributeMap.hasOwnProperty(key)) {
-          var attribute = input.getAttribute(autocompleteAttributeMap[key]);
-          if (attribute !== null) {
-            if (typeof autocompleteAttributes === 'undefined') {
-              autocompleteAttributes = {};
-            }
-            if ( key === "multiSelect") {
-              var myBoolean = attribute === "true";
-              autocompleteAttributes[key] = myBoolean;
-            } else {
-              autocompleteAttributes[key] = attribute;
-            }
-          }  
-        }
-      }
-
-      // Parse the Entity
-      if (typeof autocompleteAttributes !== 'undefined') {
-        var tempAttributes = autocompleteAttributes.entities.split(";");
-        autocompleteAttributes.entities = {};        
-        for (var i=0; i<tempAttributes.length; i++) {
-          var tempAttribute = tempAttributes[i].split(":")
-          autocompleteAttributes.entities[tempAttribute[0]] = tempAttribute[1] 
-        }
-      }
-
-      if (typeof autocompleteAttributes === 'undefined') {
-        return null;
-      } else {
-        autocompleteAttributes.element = input;
-        return autocompleteAttributes;
-      }
-    };
-
-    // Initialization Functions
+  var autocomplete = function(passedOptions) {
+ 
     function getOptions(inputControl) {
       var options = [];
       // Get Passed Options
@@ -95,12 +46,18 @@
       }
     };
     function init(options) {
+      var options = getOptions();
       for (var i=0; i<options.length; i++) {
         setTheEvents(options[i].element,inputEvents);
       }
     };
-
+ 
+    // ******
     // Events
+    // ******
+    window.onresize = function(event) {
+      positionAllDropdowns();    
+    }
     var inputEvents = {
       'focusin':function(event) {
         showDropdown(getTarget(event));
@@ -151,16 +108,13 @@
         positionAllDropdowns();
       }
     };
-    function setTheEvents(element, events) {
+    function setTheEvents(elements, events) {
       var optionElements = [];
-      if ( typeof element === 'string' ) {
-        nodeList = document.getElementsByClassName(element)
-        for (var i=0; i < nodeList.length; i++ ) {
-          optionElements[i] = nodeList[i];
-        }
-      }
-      else {
-        optionElements[0] = document.getElementById (element.id);
+      var elementsType = Object.prototype.toString.call(elements);
+      if (elementsType === '[object Array]') {
+        optionElements = elements;
+      } else {
+        optionElements.push(getObjectFromId(elements));
       }
       for (var i=0; i < optionElements.length; i++){
         optionElement = optionElements[i];
@@ -189,7 +143,11 @@
           }
         }
       }
-    };  
+    };
+ 
+    // **************
+    // Event Handlers
+    // **************
     function moveUpList(event) {
       var target = getTarget(event);
       target.select();
@@ -280,7 +238,10 @@
         }
       }
     };
+ 
+    // ******
     // Render
+    // ******
     function getDataAndRenderDropDown(target, event) {
       var options = getOptions((getTarget(event)));
       var url = options.source + "?value="+encodeURIComponent(target.value);
@@ -570,7 +531,8 @@
       // Insert the Child Node, Adjust Spacing, and Set Events
       multiSelectItems.appendChild(multiSelectElementNode);                           // Insert the MultiSelect Child Node
       positionAllDropdowns();                                                         // Adjust Positioning
-      setTheEvents("glg-autocomplete-multiSelectElementClose",multiSelectEvents); // Set Events
+      elements = document.getElementsByClassName('glg-autocomplete-multiSelectElementClose')
+      setTheEvents(elements,multiSelectEvents);                                       // Set Events
       input.value = '';                                                               // Clear the Inputs
       return multiSelectNode;
     }
@@ -587,11 +549,52 @@
       // Insert the MultiSelect Node, Adjust Positioning, and Set Events
       input.parentNode.insertBefore(multiSelectNode, input.nextSibling);              // Insert the MultiSelect Node
       positionAllDropdowns();                                                         // Adjust Positioning
-      setTheEvents("glg-autocomplete-multiSelectElementClose",multiSelectEvents); // Set Events
+      elements = document.getElementsByClassName('glg-autocomplete-multiSelectElementClose')
+      setTheEvents(elements,multiSelectEvents);                                       // Set Events
       input.value = '';                                                               // Clear the Inputs 
       return multiSelectNode;
     }
-    // Utility
+ 
+    // *********
+    // Utilities
+    // *********
+    function getAutocompleteAttributes(input) {
+      var autocompleteAttributeMap = {'entities':'glg-autocomplete-entities','source':'glg-autocomplete-source','updateSource':'glg-autocomplete-updateSource','multiSelect':'glg-autocomplete-multiselect'};
+      var autocompleteAttributes;
+      for(var key in autocompleteAttributeMap) {
+        if (autocompleteAttributeMap.hasOwnProperty(key)) {
+          var attribute = input.getAttribute(autocompleteAttributeMap[key]);
+          if (attribute !== null) {
+            if (typeof autocompleteAttributes === 'undefined') {
+              autocompleteAttributes = {};
+            }
+            if ( key === "multiSelect") {
+              var myBoolean = attribute === "true";
+              autocompleteAttributes[key] = myBoolean;
+            } else {
+              autocompleteAttributes[key] = attribute;
+            }
+          }  
+        }
+      }
+
+      // Parse the Entity
+      if (typeof autocompleteAttributes !== 'undefined') {
+        var tempAttributes = autocompleteAttributes.entities.split(";");
+        autocompleteAttributes.entities = {};        
+        for (var i=0; i<tempAttributes.length; i++) {
+          var tempAttribute = tempAttributes[i].split(":")
+          autocompleteAttributes.entities[tempAttribute[0]] = tempAttribute[1] 
+        }
+      }
+
+      if (typeof autocompleteAttributes === 'undefined') {
+        return null;
+      } else {
+        autocompleteAttributes.element = input;
+        return autocompleteAttributes;
+      }
+    };
     function getTarget(evt){
      evt = evt || window.event; // get window.event if argument is falsy (in IE)
      // get srcElement if target is falsy (IE)
@@ -643,8 +646,8 @@
       var allLists = document.getElementsByTagName('div'); // Get all list controls
       for (var i=0; i<allLists.length; i++) {
         var list = allLists[i];
-        var listKey = list.getAttribute("data-glg-dropdown-inputSelections");
-        var targetKey = target.getAttribute("data-glg-dropdown-input");
+        var listKey = list.getAttribute('data-glg-dropdown-inputSelections');
+        var targetKey = target.getAttribute('data-glg-dropdown-input');
         if (listKey == targetKey) {
           multiSelectList = list;
         }
@@ -685,17 +688,42 @@
       element.setAttribute('class',classes.join(" "));
       return true;
     };
+ 
+    // Initialization Functions
+    if (document.readyState === "complete") {
+      init();
+    } else {
+      window.onload = function() {
+        init();
+      };
+    }
   }
-  // Return the define variable or hoist autocomplete globally
-  if (typeof define === "function") {
+ 
+  // Library Detection
+  if (typeof define === "function") {                 // RequireJS
     define(function() {
-      return autocomplete;  // Return the global jQuery object
+      return autocomplete;
     });
-  } else {
+  } else {                                            // Global Object (no Library)
     if (typeof(glg) === 'undefined') {
       glg = {}    
     }
     glg['autocomplete'] = autocomplete;
     autocomplete();
   }
+ 
+  if (typeof angular === "object") {                  // Angular
+    angular.module('Autocomplete', [])
+    .factory('Autocomplete', function() {
+      return autocomplete;
+    })
+    .run(function($rootScope) {
+      $rootScope.$on('$viewContentLoaded', function () {
+        autocomplete();
+      })
+    })
+  }
+ 
 })();
+
+
