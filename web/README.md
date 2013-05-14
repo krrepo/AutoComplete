@@ -25,7 +25,7 @@ at the AutoComplete service of your choice:
        'updateSource'='//server:port/typeahead/update/'
      }];
      
-     glglabs.autocomplete(options);
+     glg.autocomplete(options);
     </script>
     ```
 

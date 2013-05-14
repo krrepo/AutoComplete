@@ -106,7 +106,7 @@
         var input = getInput(inputKey);
         target.parentNode.parentNode.removeChild(target.parentNode);
         positionAllDropdowns();
-      }
+      };
     };
     function setTheEvents(elements, events) {
       var optionElements = [];
@@ -230,7 +230,7 @@
            return;
          }
           var url = attributes.updateSource;
-          url+="?entity="+currentEntity+"&key="+target.value;
+          url+="?entity="+currentEntity+"&value="+target.value;
           var serviceTermsElement = document.createElement('script');
           serviceTermsElement.type = "text/javascript";
           serviceTermsElement.src = url+"&callback=callbackST";
