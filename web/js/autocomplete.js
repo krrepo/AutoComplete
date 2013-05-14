@@ -111,7 +111,7 @@
     function setTheEvents(elements, events) {
       var optionElements = [];
       var elementsType = Object.prototype.toString.call(elements);
-      if (elementsType === '[object Array]' || elementsType === '[object NodeList]') {
+      if (elementsType === '[object Array]' || elementsType === '[object NodeList]' || elementsType === '[object HTMLCollection]') {
         optionElements = elements;
       } else {
         optionElements.push(getObjectFromId(elements));
