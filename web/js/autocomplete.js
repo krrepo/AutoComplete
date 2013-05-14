@@ -307,7 +307,7 @@
       }
  
       // Create the 'Add to' Menu
-      if (options.updateSource && options.multiSelect && drawAddToItem) {
+      if (options.updateSource && drawAddToItem) {
         dropdown += '  <li class="glg-autocomplete-category">Click to Add</li>';
         dropdown += '  <li class="glg-autocomplete-item" role="presentation">';
         dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" tabindex="-1">' + target.value + '</a>';
