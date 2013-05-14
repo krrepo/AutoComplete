@@ -17,7 +17,7 @@
 <form class="form-horizontal">
     <div class="control-group">
         <label  class="control-label" for="states" class="span4">States (Markup) &nbsp; </label>
-        <input name="states_markup" id="states_markup" glg-autocomplete-entities="state:States" glg-autocomplete-source="//localhost:8080/typeahead/trie/" glg-autocomplete-updateSource="//localhost:8080/typeahead/increment/" glg-autocomplete-multiSelect="false">
+        <input name="states_markup" id="states_markup" glg-autocomplete-entities="state:States" glg-autocomplete-source="//localhost:8080/typeahead/trie/" glg-autocomplete-updateSource="//localhost:8080/typeahead/selected/" glg-autocomplete-multiSelect="false">
     </div>
     <div class="control-group">
         <label class="control-label" for="states">States (Method) &nbsp; </label>
@@ -46,7 +46,7 @@
     },
     'source':'//localhost:8080/typeahead/trie/',
     'element':document.getElementById('someInputElement'),
-    'updateSource'='//localhost:8080/typeahead/increment/'
+    'updateSource'='//localhost:8080/typeahead/selected/'
   }];
   glg.autocomplete(options);
 &lt;/script>
@@ -69,7 +69,7 @@
     'entities':{'state':'States'},
     'source':'//localhost:8080/typeahead/trie/',
     'element':document.getElementById('states_multiselect'),
-    //'updateSource':'//localhost:8080/typeahead/increment/',
+    //'updateSource':'//localhost:8080/typeahead/selected/',
     'multiSelect':true
   }];
   glg.autocomplete(options);
