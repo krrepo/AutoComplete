@@ -106,7 +106,7 @@
         var input = getInput(inputKey);
         target.parentNode.parentNode.removeChild(target.parentNode);
         positionAllDropdowns();
-      };
+      }
     };
     function setTheEvents(elements, events) {
       var optionElements = [];
