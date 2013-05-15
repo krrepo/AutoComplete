@@ -64,8 +64,7 @@
       },
       'focusout':function(event) {
         setTimeout(function(){
-          hideDropdown(getTarget(event));        
-          updateServiceTerms(event);          
+          hideDropdown(getTarget(event));               
         },200)
       },
       'keydown':function(event) {
@@ -215,9 +214,10 @@
         }
       }
     };
-    function updateServiceTerms(event) {
+    function updateServiceTerms(targetInput,event) {
       var target = getTarget(event);
-      var attributes = getOptions(target)
+      var value = event.target.innerHTML;
+      var attributes = getOptions(targetInput)
       if (typeof attributes.updateSource !== 'undefined') {
         var counter = 0;
         var currentEntity;
@@ -230,7 +230,7 @@
            return;
          }
           var url = attributes.updateSource;
-          url+="?entity="+currentEntity+"&value="+target.value;
+          url+="?entity="+currentEntity+"&value="+value;
           var serviceTermsElement = document.createElement('script');
           serviceTermsElement.type = "text/javascript";
           serviceTermsElement.src = url+"&callback=callbackST";
@@ -345,11 +345,13 @@
      var dropdownKey  = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
      var allInputs = document.getElementsByTagName("input"); // Get all input controls
      var multiSelect = false;
+     var targetInput = ""
      for (var i=0; i<allInputs.length; i++) {
        var input = allInputs[i];
        if (input.hasAttribute("data-glg-dropdown-input")) {
          var inputKey = input.getAttribute("data-glg-dropdown-input");
          if (inputKey == dropdownKey) {
+           targetInput = input;
            var options = getOptions(input);
            multiSelect = options.multiSelect
            if (multiSelect) {
@@ -367,6 +369,7 @@
          }
        }
      }
+     updateServiceTerms(targetInput,event);   
    }
     function convertCssPixelsToNumbers(cssPixel) {
       if (cssPixel === "" || cssPixel === null || typeof cssPixel === "undefined") {
