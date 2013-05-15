@@ -20,7 +20,7 @@ See the [tasc cli](AutoSuggest/tree/master/cli), and the API section below for t
 * [listEntities](#typeaheadlistentities)
 * [createCache](#typeaheadcreatecache)
 * [update](#typeaheadupdate)
-* [increment](#typeaheadselected)
+* [selected](#typeaheadselected)
 * [deleteTrie](#typeaheaddeletetrie)
 * [remove](#typeaheadremove)
 * [setNumResults](#typeaheadsetnumresults)
@@ -91,10 +91,10 @@ http://localhost:8080/typeahead/update?entity=state&key=myKey&value=myValue&rank
 ```
 
 ####typeahead/selected
-Increment rank of an existing value on an entity by key.  Accepts the following parameters:
+Increment rank of an existing value on an entity.  Adds the value to a mutable entity. Accepts the following parameters:
 params:
   * entity
-  * key
+  * value
 
 Example Call
 ```
