@@ -142,7 +142,7 @@ http://localhost:8080/typeahead/download?entity=state
 Upload a CSV file (gzip'd or not) containing a comma-separated list of values and meta-data on which to auto-complete.  Accepts the following parameter:
 
 params:
-  * filepath
+  * filename - to create a mutable list include _dynamic in the filename (ex: states_dynamic.csv)
 
 Example Call
 ```
