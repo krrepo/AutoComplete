@@ -208,12 +208,33 @@
       if (typeof dropdown !== 'undefined') {      
         for (var i=0; i<dropdown.childNodes.length; i++) {
           if (hasClass(dropdown.childNodes[i],'glg-autocomplete-focus')) {
-            event.target.value = dropdown.childNodes[i].children[0].innerHTML;
-            hideDropdown(target);       
+            var dropdownRow = dropdown.childNodes[i].children[0];
+            var key = dropdownRow.getAttribute('glg-autocomplete-key');
+            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
+            setSelectionValue(target,key,value);
           }
         }
       }
     };
+    function setSelectionValue(input,key,value) {
+      var options = getOptions(input);
+      multiSelect = options.multiSelect
+      if (multiSelect) {
+        // Add the Clicked Item to the MultiSelect
+        var multiSelectItems = getMultiSelectItems(input);
+        if (typeof multiSelectItems === 'undefined') {
+          createMultiSelectItems(input,key);
+        } else {
+          addToMultiSelectItems(input,multiSelectItems,key)
+        }
+      } else {
+        // Add the Clicked Item Directly to the Input
+        input.value = key;
+        input.setAttribute("glg-autocomplete-value",value);
+        input.setAttribute("glg-autocomplete-key",key);
+      }
+      hideDropdown(input);
+    }
     function updateServiceTerms(targetInput,event) {
       var target = getTarget(event);
       var value = event.target.innerHTML;
@@ -290,7 +311,7 @@
                   dropdown += '  <li class="glg-autocomplete-item glg-autocomplete-focus" role="presentation">';
                   entityDataHit = true;
                 }
-                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" tabindex="-1">' + entities[i].key + '</a>';
+                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+entities[i].key+'" glg-autocomplete-value="'+entities[i].value+'" tabindex="-1">' + entities[i].key + '</a>';
                 dropdown += '  </li>';
                 if (entities[i].value.toLowerCase() == target.value.toLowerCase()) {
                   drawAddToItem = false;
@@ -339,38 +360,27 @@
         }
       }
     }
-   function listItemClick(event) {
-     var target = getTarget(event);
-     var value = event.target.innerHTML;
-     var dropdownKey  = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
-     var allInputs = document.getElementsByTagName("input"); // Get all input controls
-     var multiSelect = false;
-     var targetInput = ""
-     for (var i=0; i<allInputs.length; i++) {
-       var input = allInputs[i];
-       if (input.hasAttribute("data-glg-dropdown-input")) {
-         var inputKey = input.getAttribute("data-glg-dropdown-input");
-         if (inputKey == dropdownKey) {
-           targetInput = input;
-           var options = getOptions(input);
-           multiSelect = options.multiSelect
-           if (multiSelect) {
-             // Add the Clicked Item to the MultiSelect
-             var multiSelectItems = getMultiSelectItems(input);
-             if (typeof multiSelectItems === 'undefined') {
-               createMultiSelectItems(input,value);
-             } else {
-               addToMultiSelectItems(input,multiSelectItems,value)
-             }
-           } else {
-             // Add the Clicked Item Directly to the Input
-             input.value = value;
-           }
-         }
-       }
-     }
-     updateServiceTerms(targetInput,event);   
-   }
+ 
+    function listItemClick(event) {
+      var target = getTarget(event);
+      var value = event.target.innerHTML;
+      var dropdownKey = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
+      var allInputs = document.getElementsByTagName("input"); // Get all input controls
+      var multiSelect = false;
+      var targetInput = "";
+      for (var i=0; i<allInputs.length; i++) {
+        var input = allInputs[i];
+        if (input.hasAttribute("data-glg-dropdown-input")) {
+          var inputKey = input.getAttribute("data-glg-dropdown-input");
+          if (inputKey == dropdownKey) {
+            targetInput = input;
+            setSelectionvalue(targetInput,value)
+          }
+        }
+      }
+      updateServiceTerms(targetInput,event);
+    }
+ 
     function convertCssPixelsToNumbers(cssPixel) {
       if (cssPixel === "" || cssPixel === null || typeof cssPixel === "undefined") {
         return 0;
