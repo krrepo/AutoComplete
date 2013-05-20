@@ -65,7 +65,7 @@ http://localhost:8080/typeahead/listEntities
 ```
 Example Response
 ```
-["state","org"]
+{"state":"nonMutable","org":"Mutable"}
 ```
 
 ####typeahead/createCache
