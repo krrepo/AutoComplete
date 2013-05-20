@@ -241,9 +241,9 @@ public class TrieResource {
 	@Path("/listEntities")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getEntites() {
-		List<String>entities = new ArrayList<String>();
-		for (String type : tries.keySet()){
-			entities.add(type);
+		Map<String, String>entities = new HashMap<String, String>();
+		for (Map.Entry<String, Trie> entry: tries.entrySet()){
+			entities.put(entry.getKey(), entry.getValue().isNonMutable() ? "nonMutable":"Mutable");
 		}
 
 		return Response.status(200).entity(entities).build();
