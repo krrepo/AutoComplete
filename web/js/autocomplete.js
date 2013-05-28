@@ -374,7 +374,7 @@
           var inputKey = input.getAttribute("data-glg-dropdown-input");
           if (inputKey == dropdownKey) {
             targetInput = input;
-            setSelectionvalue(targetInput,value)
+            setSelectionValue(targetInput,value)
           }
         }
       }
