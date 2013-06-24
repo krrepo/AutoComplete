@@ -42,6 +42,25 @@ public class Trie {
 		tree = new SuggestTree(numSuggestions);
 	}
 	
+	public void insert(String key, String value, String display, int rank){
+		if (!nonMutable){
+			if (key.length() > 0 && value.length() > 0){
+				if (maxSize > -1){
+					//see if there's enough space
+					if (cache.isFull()){
+						//remove element
+						String remove = (String) cache.lastKey();
+						cache.remove(remove);
+						tree.remove(remove);
+					}
+					cache.put(key, 1);
+				}
+				tree.remove(key);
+				tree.put(key, value, display, rank);
+			}
+		}
+	}
+	
 	public void insert(String key, String value, int rank){
 		if (!nonMutable){
 			if (key.length() > 0 && value.length() > 0){
@@ -87,6 +106,17 @@ public class Trie {
 				}
 			}
 			tree.put(key, value, rank);
+		}
+	}
+	
+	public void updateRank(String key, String value, String display, int rank){
+		if (!nonMutable){
+			if (maxSize > -1){
+				if (cache.containsKey(key)){
+					cache.put(key, 1);
+				}
+			}
+			tree.put(key, value, display, rank);
 		}
 	}
 	
@@ -147,13 +177,17 @@ public class Trie {
 		return tree.size();
 	}
 	
-	public List<Entry<String, String>> getSuggestions(String key){
-		List<Entry<String, String>>out = new ArrayList<Entry<String, String>>();
+	public List<Entry<String, String, String>> getSuggestions(String key){
+		List<Entry<String, String, String>>out = new ArrayList<Entry<String, String, String>>();
 		if (key != null && key.length() > 0){
 			Node n = tree.getSuggestions(key);
 			if (n!=null){
 				for (int i = 0; i < n.size(); i++){
-					out.add(new Entry<String, String>(n.get(i), n.getValue(i)));
+					if (n.getDisplay() != null && n.getDisplay().length() > 0){
+						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), n.getDisplay()));
+					}else{
+						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i)));
+					}
 				}
 			}
 		}

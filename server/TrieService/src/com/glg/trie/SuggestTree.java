@@ -242,6 +242,78 @@ public class SuggestTree {
         }
     }
     
+    /**
+     * Inserts the specified suggestion with the specified weight into this
+     * tree, or assigns the specified new weight to the suggestion if it is
+     * already present.
+     * @throws IllegalArgumentException if the specified suggestion is an empty
+     * string or the specified weight is negative
+     * @throws NullPointerException if the specified suggestion is {@code null}
+     */
+    public void put(String suggestion, String value, String display, int weight) {
+        if(suggestion.isEmpty() || weight < 0)
+            throw new IllegalArgumentException();
+        if(root == null) {
+            root = new Node(suggestion, value, display, weight, 0, null);
+            size++;
+            return;
+        }
+        int i = 0;
+        Node n = root;
+        while(true) {
+            if(suggestion.charAt(i) < n.firstChar) {
+                if(n.left != null)
+                    n = n.left;
+                else {
+                    n.left = new Node(suggestion, value, display, weight, i, n);
+                    insertIntoLists(n.left);
+                    size++;
+                    return;
+                }
+            }else if(suggestion.charAt(i) > n.firstChar) {
+                if(n.right != null)
+                    n = n.right;
+                else {
+                    n.right = new Node(suggestion, value, display, weight, i, n);
+                    insertIntoLists(n.right);
+                    size++;
+                    return;
+                }
+            }else{
+                for(i++; i < n.charEnd; i++) {
+                    if(i == suggestion.length()
+                            || suggestion.charAt(i) != n.suggestion.charAt(i)) {
+                        n = splitNode(n, i);
+                        break;
+                    }
+                }
+                if(i < suggestion.length()) {
+                    if(n.mid != null)
+                        n = n.mid;
+                    else {
+                        n.mid = new Node(suggestion,value, display, weight, i, n);
+                        insertIntoLists(n.mid);
+                        size++;
+                        return;
+                    }
+                }else if(n.weight == -1) {
+                    n.suggestion = suggestion;
+                    n.value = value;
+                    n.weight = weight;
+                    insertIntoLists(n);
+                    size++;
+                    return;
+                }else if(n.weight != weight) {
+                    int oldWeight = n.weight;
+                    n.weight = weight;
+                    updateListPosition(n, oldWeight);
+                    return;
+                }else
+                    return;
+            }
+        }
+    }
+    
     private Node splitNode(Node n, int position) {
         Node[] list = (n.list.length < k) ? n.list : Arrays.copyOf(n.list, k);
         Node m = new Node(list, n, position);

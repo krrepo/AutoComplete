@@ -156,6 +156,12 @@ public class TrieResource {
 					String key = clean(row[0].trim());
 					int weight = Integer.valueOf(row[2].trim());
 					vals.insert(key, value, weight);
+				}else if (row.length == 4){
+					String value = row[1].trim();
+					String key = clean(row[0].trim());
+					int weight = Integer.valueOf(row[2].trim());
+					String display = row[3].trim();
+					vals.insert(key, value, display, weight);
 				}
 			}
 			logger.info(name + " size:" + vals.getSize());
@@ -194,20 +200,20 @@ public class TrieResource {
 	@Path("/trie")
 	@Produces({"application/x-javascript"})
 	public JSONWithPadding TagText(@QueryParam("callback") String callback, @QueryParam("entity")List<String>entities, @QueryParam("value") String val){
-		Map<String, List<Entry<String, String>>> output = new HashMap<String, List<Entry<String, String>>>();
+		Map<String, List<Entry<String, String, String>>> output = new HashMap<String, List<Entry<String, String, String>>>();
 		if (entities != null){
 			for (String entity : entities){
 				if (val!=null && tries.containsKey(entity)){
 					String key = clean(val);
 					Trie trie = tries.get(entity);
-					List<Entry<String, String>> values = trie.getSuggestions(key);
+					List<Entry<String, String, String>> values = trie.getSuggestions(key);
 					if (values.size() > 0){
 						output.put(entity, values);
 					}
 				}
 			}
 		}
-		return new JSONWithPadding(new GenericEntity<Map<String, List<Entry<String, String>>>>(output) {
+		return new JSONWithPadding(new GenericEntity<Map<String, List<Entry<String, String, String>>>>(output) {
         }, callback);
     }
 	

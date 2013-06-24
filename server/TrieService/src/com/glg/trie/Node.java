@@ -14,12 +14,13 @@ public final class Node implements Comparable{
     Node[] list;
 	String suggestion;
     String value;
+    String display;
     int weight;
     char firstChar;
     final short charEnd;
     Node left, mid, right, parent;
     
-    Node(String suggestion, String value, int weight, int index, Node parent) {
+    Node(String suggestion, String value, String display, int weight, int index, Node parent) {
         list = new Node[] {this};
         this.suggestion = suggestion;
         this.weight = weight;
@@ -28,6 +29,19 @@ public final class Node implements Comparable{
         left = mid = right = null;
         this.parent = parent;
         this.value = value;
+        this.value = display;
+    }
+    
+    Node(String suggestion, String value,int weight, int index, Node parent) {
+        list = new Node[] {this};
+        this.suggestion = suggestion;
+        this.weight = weight;
+        firstChar = suggestion.charAt(index);
+        charEnd = (short) suggestion.length();
+        left = mid = right = null;
+        this.parent = parent;
+        this.value = value;
+        this.value = "";
     }
     
     
@@ -68,6 +82,10 @@ public final class Node implements Comparable{
     
     public String getValue(){
     	return value;
+    }
+    
+    public String getDisplay(){
+    	return display;
     }
     
     public int getWeight(){
