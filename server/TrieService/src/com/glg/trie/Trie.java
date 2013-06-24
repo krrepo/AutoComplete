@@ -164,6 +164,27 @@ public class Trie {
 		}
 	}
 	
+	public void insertOrIncrement(String key, String value, String display){
+		if (!nonMutable){
+			try{
+				int currWeight = 0;
+				currWeight = tree.getWeight(key);
+				if (currWeight == -1){
+					//empty node add it
+					currWeight = 0;
+				}
+				currWeight++;
+				tree.put(key, value, display, currWeight);
+				
+				if (maxSize > -1){
+					if (cache.containsKey(key)){
+						cache.put(key, 1);
+					}
+				}
+			}catch (Exception e){}
+		}
+	}
+	
 	public void remove(String suggestion){
 		if (!nonMutable){
 			if (maxSize > -1){
@@ -183,10 +204,10 @@ public class Trie {
 			Node n = tree.getSuggestions(key);
 			if (n!=null){
 				for (int i = 0; i < n.size(); i++){
-					if (n.getDisplay() != null && n.getDisplay().length() > 0){
-						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), n.getDisplay()));
+					if (n.getDisplay(i) != null && n.getDisplay(i).length() > 0){
+						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), n.getDisplay(i)));
 					}else{
-						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i)));
+						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), ""));
 					}
 				}
 			}

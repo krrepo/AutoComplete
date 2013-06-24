@@ -29,10 +29,10 @@ public final class Node implements Comparable{
         left = mid = right = null;
         this.parent = parent;
         this.value = value;
-        this.value = display;
+        this.display = display;
     }
     
-    Node(String suggestion, String value,int weight, int index, Node parent) {
+    Node(String suggestion, String value, int weight, int index, Node parent) {
         list = new Node[] {this};
         this.suggestion = suggestion;
         this.weight = weight;
@@ -41,7 +41,7 @@ public final class Node implements Comparable{
         left = mid = right = null;
         this.parent = parent;
         this.value = value;
-        this.value = "";
+        this.display = "";
     }
     
     
@@ -74,6 +74,10 @@ public final class Node implements Comparable{
      */
     public String getValue(int index) {
         return list[index].value;
+    }
+    
+    public String getDisplay(int index) {
+        return list[index].display;
     }
     
     public String getSuggestion(){
