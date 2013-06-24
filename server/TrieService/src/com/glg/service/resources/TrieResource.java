@@ -229,11 +229,12 @@ public class TrieResource {
 				com.glg.trie.SuggestTree.Iterator i = trie.getTrie().iterator();
 				Node n;
 				while ((n = i.next())!=null){
-					String[] vals = new String[3];
+					String[] vals = new String[4];
 					//key, value, weight
 					vals[0] = n.getSuggestion();
 					vals[1] = n.getValue();
 					vals[2] = n.getWeight() + "";
+					vals[3] = n.getDisplay();
 					output.add(vals);
 				}
 				return Response.status(200).entity(output).build();
@@ -317,6 +318,7 @@ public class TrieResource {
 	@GET
 	@Path("/createCache")
 	public Response createCache(@QueryParam("entity") String entity, @QueryParam("maxSize") int size){
+		logger.info("In create cache: " + entity);
 		if (entity!=null && entity.length() > 0  && !tries.containsKey(entity) && size > 0){
 			Trie t = new Trie(size, NUM_RESULTS);
 			tries.put(entity, t);
@@ -328,7 +330,8 @@ public class TrieResource {
 	
 	@GET
 	@Path("/update")
-	public Response updateEntry(@QueryParam("entity") String entity, @QueryParam("key") String key, @QueryParam("value") String value, @QueryParam("rank") int rank){
+	public Response updateEntry(@QueryParam("entity") String entity, @QueryParam("key") String key, 
+			@QueryParam("value") String value, @QueryParam("display")String display, @QueryParam("rank") int rank){
 		if (entity!=null && entity.length() > 0  && tries.containsKey(entity)){
 			Trie trie = tries.get(entity);
 			if (value!=null && value.length() > 0 && rank > 0){
@@ -336,8 +339,13 @@ public class TrieResource {
 				if (key!=null && key.length() > 0){
 					cleanedKey = clean(key);
 				}
-				trie.insert(cleanedKey, value, rank);
-				logger.info("updating:" + entity + " " + value + " " + rank);
+				if (display == null){
+					trie.insert(cleanedKey, value, rank);
+					//logger.info("updating:" + entity + " " + value + " " + rank);
+				}else{
+					trie.insert(cleanedKey, value, display, rank);
+					//logger.info("updating:" + entity + " " + value + " " + display + " " + rank);
+				}
 				return Response.ok().build();
 			}
 		}
@@ -474,13 +482,13 @@ public class TrieResource {
 				vals[0] = n.getSuggestion();
 				vals[1] = n.getValue();
 				vals[2] = n.getWeight() + "";
+				vals[2] = n.getDisplay();
 				writer.writeNext(vals);
 			}
 		}catch(Exception e){	
 			logger.error("Error writing csv:" + e);
 		}
 	}
-	
 	
 	private String clean(String str) {
 		String cleaned = punct.matcher(str).replaceAll("").toLowerCase();
