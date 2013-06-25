@@ -40,7 +40,7 @@ http://localhost:8080/typeahead/trie?value=d&entity=state&entity=org&callback=ca
 ```
 Example Response
 ```
-callbackRD({"state":["DE","DC"]})
+callbackRD({"state":[{"key":"district of columbia","value":"DC","display":"District of Columbia"},{"key":"delaware","value":"DE","display":"Delaware"}]})
 ```
 
 ####typeahead/listTrie
@@ -53,7 +53,7 @@ http://localhost:8080/typeahead/listTrie?entity=state
 ```
 Example Response
 ```
-[["alabama","AL","1"],["alaska","AK","1"],["american samoa","AS","1"]]
+[["alabama","AL","1","Alabama"],["alaska","AK","1","Alaska"],["american samoa","AS","1","American Samoa"]]
 ```
 
 ####typeahead/listEntities
@@ -84,10 +84,11 @@ Update an existing value on an entity list. If the value does not exist, it will
   * key
   * value
   * rank
+  * display
 
 Example Call
 ```
-http://localhost:8080/typeahead/update?entity=state&key=myKey&value=myValue&rank=myRank
+http://localhost:8080/typeahead/update?entity=state&key=myKey&value=myValue&rank=myRank&display=myDisplay
 ```
 
 ####typeahead/selected
@@ -151,7 +152,8 @@ curl -F "file=@states.csv" http://localhost:8080/typeahead/upload
 
 Format
 ```
-column 1 : Value
-column 2 : Key
+column 1 : Key
+column 2 : Value
 column 3 : Rank (Numeric, Optional)
+column 4 : Display (String, Optional)
 ```
