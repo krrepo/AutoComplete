@@ -354,12 +354,16 @@ public class TrieResource {
 	
 	@GET
 	@Path("/selected")
-	public Response selected(@QueryParam("entity") String entity, @QueryParam("value") String value){
+	public Response selected(@QueryParam("entity") String entity, @QueryParam("value") String value, @QueryParam("display")String display){
 		if (entity!=null && entity.length() > 0  && tries.containsKey(entity)){
 			Trie trie = tries.get(entity);
 			if (value!=null && value.length() > 0){
 				String cleanedKey = clean(value);
-				trie.insertOrIncrement(cleanedKey, value);
+				if (display!=null){
+					trie.insertOrIncrement(cleanedKey, value, display);
+				}else {
+					trie.insertOrIncrement(cleanedKey, value);
+				}
 				logger.info("selecting:" + entity + " ");
 				return Response.ok().build();
 			}
@@ -477,12 +481,12 @@ public class TrieResource {
 			com.glg.trie.SuggestTree.Iterator i = tree.iterator();
 			Node n;
 			while ((n = i.next())!=null){
-				String[] vals = new String[3];
+				String[] vals = new String[4];
 				//key, value, weight
 				vals[0] = n.getSuggestion();
 				vals[1] = n.getValue();
 				vals[2] = n.getWeight() + "";
-				vals[2] = n.getDisplay();
+				vals[3] = n.getDisplay();
 				writer.writeNext(vals);
 			}
 		}catch(Exception e){	
