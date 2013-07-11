@@ -29,6 +29,9 @@ OPENCSV = 'net.sf.opencsv:opencsv:jar:2.3'
 PERSISTENCE = 'javax.persistence:persistence-api:jar:1.0.2'
 SLF4J = 'org.slf4j:slf4j-api:jar:1.6.4'
 
+JACKSONDATABIND = 'com.fasterxml.jackson.core:jackson-databind:jar:2.2.2'
+NETTY = 'com.fasterxml.jackson.core:jackson-databind:jar:2.2.2'
+
 desc "The TrieService project"
 define "TrieService" do
 
@@ -42,7 +45,7 @@ define "TrieService" do
   # So, trim off the CR (hash is always 40 characters).
   manifest["Git-Hash"] = GITHASH[0..39]
 
-  compile.with transitive(CCOLLECTIONS, GRIZZLYFW, JCORE, JAVAX, JAXBAPI224 , JAXBIMPL224, JERSEYCORE, JERSEYGRIZZLY, JERSEYJSON, JERSEYMULTIPART, JERSEYSERVER, JERSEYSPRING, JETTISON, JSR, LBACK_CLASSIC, OAUTHSRVR, OPENCSV, PERSISTENCE, SLF4J)
+  compile.with transitive(CCOLLECTIONS, GRIZZLYFW, JCORE, JAVAX, JAXBAPI224 , JAXBIMPL224, JERSEYCORE, JERSEYGRIZZLY, JERSEYJSON, JERSEYMULTIPART, JERSEYSERVER, JERSEYSPRING, JETTISON, JSR, LBACK_CLASSIC, OAUTHSRVR, OPENCSV, PERSISTENCE, SLF4J, NETTY, JACKSONDATABIND)
     
   compile.from './src'
 
