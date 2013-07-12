@@ -30,7 +30,7 @@ PERSISTENCE = 'javax.persistence:persistence-api:jar:1.0.2'
 SLF4J = 'org.slf4j:slf4j-api:jar:1.6.4'
 
 JACKSONDATABIND = 'com.fasterxml.jackson.core:jackson-databind:jar:2.2.2'
-NETTY = 'com.fasterxml.jackson.core:jackson-databind:jar:2.2.2'
+NETTY = 'io.netty:netty:jar:3.6.6.Final'
 
 desc "The TrieService project"
 define "TrieService" do

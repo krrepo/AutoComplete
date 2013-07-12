@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.regex.Pattern;
@@ -21,10 +22,13 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.VoidAckCallback;
 import com.corundumstudio.socketio.listener.DataListener;
+import com.glg.service.resources.TrieDataListner;
 import com.glg.service.resources.TrieResource;
 import com.glg.trie.Trie;
 
+
 public class SocketIOTrieServer {
+	
 	private final static Logger logger = LoggerFactory.getLogger(SocketIOTrieServer.class);
 	static final Pattern quot = Pattern.compile("\"");
 	static final Pattern punct= Pattern.compile("\\p{Punct}");
@@ -42,16 +46,23 @@ public class SocketIOTrieServer {
 	Timer timer;
 	Map<String, Trie> tries;
 	
+	public SocketIOTrieServer(){
+		tries = new HashMap<String, Trie>();
+	}
+	
 	public void loadMaps(){
+		String filename = "";
 		try{
 			File dir = new File(PATH);
 			for (File f : dir.listFiles()) {
+				filename = f.getName();
 				if (f.isFile() && (f.getName().endsWith("csv.gz") || f.getName().endsWith("csv"))){
 					loadFile(f);
 				}
 		    }
 		}catch(Exception e){
-			logger.error("Error loading maps:" + e);
+			logger.error("Error loading maps:" + e + " filename:"+ filename);
+			e.printStackTrace();
 		}
 	}
 	
@@ -59,6 +70,7 @@ public class SocketIOTrieServer {
 	public static void main(String[] args)  throws InterruptedException {
 		SocketIOTrieServer tries = new SocketIOTrieServer();
 		tries.loadMaps();
+		TrieDataListner listner = new TrieDataListner(tries.tries);
 		logger.info("Loaded tries");
 		
 		Configuration config = new Configuration();
@@ -67,41 +79,7 @@ public class SocketIOTrieServer {
 
         final SocketIOServer server = new SocketIOServer(config);
         logger.info("created server");
-        server.addJsonObjectListener(TrieObject.class, new DataListener<TrieObject>() {
-            @Override
-            public void onData(final SocketIOClient client, TrieObject data, final AckRequest ackRequest) {
-
-                // check is ack requested by client,
-                // but it's not required check
-                if (ackRequest.isAckRequested()) {
-                    // send ack response with data to client
-                    ackRequest.sendAckData("client message was delivered to server!", "yeah!");
-                }
-                
-                // send message back to client with ack callback WITH data
-                TrieObject trie = new TrieObject();
-                String entity = data.getEntity();
-                if (entity!=null && tries.tries.containsKey(entity)){
-                	String prefix = data.getPrefix();
-                }
-                client.sendJsonObject(trie, new AckCallback<String>(String.class) {
-                    @Override
-                    public void onSuccess(String result) {
-                        System.out.println("ack from client: " + client.getSessionId() + " data: " + result);
-                    }
-                });
-
-                // send message back to client with ack callback WITHOUT data
-                TrieObject ackTrie = new TrieObject();
-                client.sendJsonObject(ackTrie, new VoidAckCallback() {
-                    @Override
-                    public void onSuccess() {
-                        System.out.println("ack from client: " + client.getSessionId());
-                    }
-                });
-
-            }
-        });
+        server.addJsonObjectListener(TrieObject.class, listner);
 
         server.start();
         logger.info("started server");
@@ -192,4 +170,5 @@ public class SocketIOTrieServer {
 	    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFD); 
 	    return diacritics.matcher(cleaned).replaceAll("");
 	}
+	
 }
