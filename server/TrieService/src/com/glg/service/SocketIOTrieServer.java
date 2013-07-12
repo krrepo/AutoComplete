@@ -59,12 +59,14 @@ public class SocketIOTrieServer {
 	public static void main(String[] args)  throws InterruptedException {
 		SocketIOTrieServer tries = new SocketIOTrieServer();
 		tries.loadMaps();
+		logger.info("Loaded tries");
 		
 		Configuration config = new Configuration();
         config.setHostname("localhost");
         config.setPort(9092);
 
         final SocketIOServer server = new SocketIOServer(config);
+        logger.info("created server");
         server.addJsonObjectListener(TrieObject.class, new DataListener<TrieObject>() {
             @Override
             public void onData(final SocketIOClient client, TrieObject data, final AckRequest ackRequest) {
@@ -75,9 +77,13 @@ public class SocketIOTrieServer {
                     // send ack response with data to client
                     ackRequest.sendAckData("client message was delivered to server!", "yeah!");
                 }
-
+                
                 // send message back to client with ack callback WITH data
                 TrieObject trie = new TrieObject();
+                String entity = data.getEntity();
+                if (entity!=null && tries.tries.containsKey(entity)){
+                	String prefix = data.getPrefix();
+                }
                 client.sendJsonObject(trie, new AckCallback<String>(String.class) {
                     @Override
                     public void onSuccess(String result) {
@@ -98,7 +104,8 @@ public class SocketIOTrieServer {
         });
 
         server.start();
-
+        logger.info("started server");
+        
         Thread.sleep(Integer.MAX_VALUE);
 
         server.stop();
