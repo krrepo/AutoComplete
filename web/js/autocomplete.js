@@ -233,6 +233,17 @@
         input.setAttribute("glg-autocomplete-value",value);
         input.setAttribute("glg-autocomplete-key",key);
       }
+ 
+      // Fire Change Event
+      if ("fireEvent" in input) {
+        input.fireEvent("onchange");
+      } else {
+        var selectEvent = document.createEvent("HTMLEvents");
+        selectEvent.initEvent("change", false, true);
+        input.dispatchEvent(selectEvent);
+      }
+ 
+      // Hide Dropdown
       hideDropdown(input);
     }
     function updateServiceTerms(targetInput,event) {
