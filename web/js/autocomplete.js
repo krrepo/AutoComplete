@@ -375,6 +375,7 @@
     function listItemClick(event) {
       var target = getTarget(event);
       var value = event.target.innerHTML;
+      var key =  event.target.getAttribute("glg-autocomplete-value")
       var dropdownKey = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
       var allInputs = document.getElementsByTagName("input"); // Get all input controls
       var multiSelect = false;
@@ -385,7 +386,7 @@
           var inputKey = input.getAttribute("data-glg-dropdown-input");
           if (inputKey == dropdownKey) {
             targetInput = input;
-            setSelectionValue(targetInput,value)
+            setSelectionValue(targetInput,value,key)
           }
         }
       }
