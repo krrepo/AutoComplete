@@ -322,7 +322,21 @@
                   dropdown += '  <li class="glg-autocomplete-item glg-autocomplete-focus" role="presentation">';
                   entityDataHit = true;
                 }
-                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+entities[i].key+'" glg-autocomplete-value="'+entities[i].value+'" tabindex="-1">' + entities[i].key + '</a>';
+
+		         display = entities[i].display;
+				 key = entities[i].key;
+				 value =entities[i].value;
+
+				 // If display exists, us it as is.
+				 // Otherwise, use value, stripped of quotation marks.
+				 if ((display == null) || (display.length == 0)) {
+					 if (value.charAt(0) == '"') {
+				 	    display = value.substring(1,value.length-1) ; // Get rid of quotation marks
+				     }
+				 }
+		 
+                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+ key +'" glg-autocomplete-value="'+ value +'" tabindex="-1">' + display + '</a>';
+              
                 dropdown += '  </li>';
                 if (entities[i].value.toLowerCase() == target.value.toLowerCase()) {
                   drawAddToItem = false;
