@@ -11,7 +11,7 @@ command :show do |c|
       if resp.code == '200'
         entries = JSON resp.body
         puts "Entries from #{name}:"
-        puts Hirb::Helpers::Table.render entries, :headers=>["Key", "Value",  "Weight"]
+        puts Hirb::Helpers::Table.render entries, :headers=>["Key", "Value",  "Weight", "Display"]
       elsif resp.code == '202'
         puts "List '#{name}' too long to display"
       elsif resp.code == '204'

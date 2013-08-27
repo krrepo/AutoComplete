@@ -11,8 +11,9 @@ command :list do |c|
       if resp.code == '200'
         puts "List of Labels:"
         entries = JSON resp.body
-        entries.sort!.each do |e|
-          puts "  #{e}"
+        entries.keys.sort.each { |k| entries[k] = entries.delete k }
+        entries.each do |e|
+          puts "  #{e[0]}:#{e[1]}"
         end
       else
         ap "Server Error: #{resp.code} - #{resp.message}"
