@@ -210,8 +210,15 @@
           if (hasClass(dropdown.childNodes[i],'glg-autocomplete-focus')) {
             var dropdownRow = dropdown.childNodes[i].children[0];
             var key = dropdownRow.getAttribute('glg-autocomplete-key');
-            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
-            setSelectionValue(target,key,value);
+//            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
+            var value =  dropdownRow.innerHTML;
+			// Ordering the arguments so that the names match the signature of 
+			// setSelectionValue causes the wrong text to be displayed; reversing
+			// key and value produces the correct result.
+			// See the similar call in listItemClick, which always displayed the 
+			// correct thing, and always had the arguments "reversed". 
+			// The "real" bug may be further down the line?
+            setSelectionValue(target,value,key); 
           }
         }
       }
