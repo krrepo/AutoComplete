@@ -211,7 +211,7 @@
             var dropdownRow = dropdown.childNodes[i].children[0];
             var key = dropdownRow.getAttribute('glg-autocomplete-key');
 //            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
-            var value =  dropdownRow.innerHTML;
+            var value =  dropdownRow.innerHTML.replace(/&amp;/g,"&");
 			// Ordering the arguments so that the names match the signature of 
 			// setSelectionValue causes the wrong text to be displayed; reversing
 			// key and value produces the correct result.
@@ -395,7 +395,7 @@
  
     function listItemClick(event) {
       var target = getTarget(event);
-      var value = event.target.innerHTML;
+      var value = event.target.innerHTML.replace(/&amp;/g,"&");
       var key =  event.target.getAttribute("glg-autocomplete-value")
       var dropdownKey = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
       var allInputs = document.getElementsByTagName("input"); // Get all input controls
