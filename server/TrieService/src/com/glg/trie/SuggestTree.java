@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A data structure for rank-sensitive autocomplete. It provides O(log <i>n</i>)
@@ -72,6 +74,7 @@ public class SuggestTree {
     private Node root;
     private int size;
     private boolean replaceWithSuccessor;
+	private final static Logger logger = LoggerFactory.getLogger(SuggestTree.class);
 
     /**
      * Creates a tree that returns the top {@code k} highest weighted
@@ -116,15 +119,26 @@ public class SuggestTree {
         	 throw new IllegalArgumentException();
         int i = 0;
         Node n = root;
+        logger.info("getSuggestions with prefix of " + prefix);
         while(n != null) {
-            if(prefix.charAt(i) < n.firstChar)
+        	logger.info("getSuggestions prefix.charAt(i) " + prefix.charAt(i) + "  i = " + i);
+        	logger.info("    n.firstChar: " + n.firstChar);
+            if(prefix.charAt(i) < n.firstChar) {
+            	logger.info("     Went left: " + n.left);
                 n = n.left;
-            else if(prefix.charAt(i) > n.firstChar)
+            }
+            else if(prefix.charAt(i) > n.firstChar) {
+            	logger.info("     Went right: " + n.right);
                 n = n.right;
+            }
             else {
+            	logger.info("     Went straight: " + n.charEnd);
                 for(i++; i < n.charEnd && i < prefix.length(); i++) {
-                    if(prefix.charAt(i) != n.suggestion.charAt(i))
+                	logger.info("  i = " + i + "  prefix.charAt(i): " + prefix.charAt(i));
+                    if(prefix.charAt(i) != n.suggestion.charAt(i)) {
+                    	logger.info("  RETURNING NULL!");
                         return null;
+                    }
                 }
                 if(i < prefix.length())
                     n = n.mid;
