@@ -16,8 +16,14 @@ import org.apache.commons.collections.map.LRUMap;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.glg.service.resources.TrieResource;
+
 
 public class Trie {
+	private final static Logger logger = LoggerFactory.getLogger(Trie.class);
 	boolean nonMutable = false;
 	int maxSize = -1;
 	//LRUMap<String, Integer>
@@ -202,9 +208,13 @@ public class Trie {
 		List<Entry<String, String, String>>out = new ArrayList<Entry<String, String, String>>();
 		if (key != null && key.length() > 0){
 			Node n = tree.getSuggestions(key);
+			logger.info("getSuggestions node " + n);
 			if (n!=null){
+				logger.info("getSuggestions node size is " + n.size());
 				for (int i = 0; i < n.size(); i++){
+					
 					if (n.getDisplay(i) != null && n.getDisplay(i).length() > 0){
+						logger.info("getSuggestions node value is  " + n.getValue(i) + " and display is " + n.getDisplay(i));
 						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), n.getDisplay(i)));
 					}else{
 						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), ""));
