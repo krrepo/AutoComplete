@@ -45,7 +45,7 @@ import com.sun.jersey.spi.resource.Singleton;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -68,16 +68,19 @@ public class TrieResource {
 	
 	Timer timer;
 	Map<String, Trie> tries;
+
 	
 	public TrieResource(){
+				
 		tries = new HashMap<String, Trie>();
 		loadProperties();
 		loadMaps();
+
 		timer = new Timer(); 
 		//run every two hours
 		timer.schedule( new AutoSave(this), SAVE_FREQUENCY, SAVE_FREQUENCY ); 
 	}
-	
+
 	public void loadMaps(){
 		try{
 			File dir = new File(PATH);
@@ -490,10 +493,19 @@ public class TrieResource {
 			logger.error("Error writing csv:" + e);
 		}
 	}
-	
+		
 	private String clean(String str) {
-		String cleaned = punct.matcher(str).replaceAll("").toLowerCase();
-	    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFD); 
-	    return diacritics.matcher(cleaned).replaceAll("");
+		try{
+		    String cleaned = punct.matcher(str).replaceAll("").toLowerCase();
+	        //http://stackoverflow.com/questions/285228/how-to-convert-utf-8-to-us-ascii-in-java
+		    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFKD);
+	        cleaned = diacritics.matcher(cleaned).replaceAll("");
+
+	        return cleaned;
+	        
+	    }catch(Exception e){	
+		  logger.error("Error writing csv:" + e);
+		  return "";
+	    }
 	}
 }
