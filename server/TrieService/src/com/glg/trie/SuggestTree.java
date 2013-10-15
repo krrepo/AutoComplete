@@ -15,9 +15,6 @@ package com.glg.trie;
  */
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,24 +116,16 @@ public class SuggestTree {
         	 throw new IllegalArgumentException();
         int i = 0;
         Node n = root;
-        logger.info("getSuggestions with prefix of " + prefix);
         while(n != null) {
-        	logger.info("getSuggestions prefix.charAt(i) " + prefix.charAt(i) + "  i = " + i);
-        	logger.info("    n.firstChar: " + n.firstChar);
             if(prefix.charAt(i) < n.firstChar) {
-            	logger.info("     Went left: " + n.left);
                 n = n.left;
             }
             else if(prefix.charAt(i) > n.firstChar) {
-            	logger.info("     Went right: " + n.right);
                 n = n.right;
             }
             else {
-            	logger.info("     Went straight: " + n.charEnd);
                 for(i++; i < n.charEnd && i < prefix.length(); i++) {
-                	logger.info("  i = " + i + "  prefix.charAt(i): " + prefix.charAt(i));
                     if(prefix.charAt(i) != n.suggestion.charAt(i)) {
-                    	logger.info("  RETURNING NULL!");
                         return null;
                     }
                 }
