@@ -210,7 +210,7 @@ public class TrieResource {
 					String key = clean(val);
 					Trie trie = tries.get(entity);
 					List<Entry<String, String, String>> values = trie.getSuggestions(key);
-					logger.info("val is " + val + "   entity is " + entity + "   key is " + key + "   size of values is " + values.size());
+					logger.debug("val is " + val + "   entity is " + entity + "   key is " + key + "   size of values is " + values.size());
 					if (values.size() > 0){
 						output.put(entity, values);
 					}
