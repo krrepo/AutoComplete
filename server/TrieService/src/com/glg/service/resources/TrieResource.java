@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.Normalizer;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,9 +130,9 @@ public class TrieResource {
 			
 			CSVReader reader = null;
 			if (f.getName().endsWith("csv.gz")){
-				reader = new CSVReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(f))));
+				reader = new CSVReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(f)), "UTF-8"));
 			}else if (f.getName().endsWith("csv")){
-				reader = new CSVReader(new InputStreamReader(new FileInputStream(f)));
+				reader = new CSVReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
 			}
 			
 			String name = f.getName();
@@ -493,13 +494,77 @@ public class TrieResource {
 			logger.error("Error writing csv:" + e);
 		}
 	}
-		
+	
+	private synchronized static String utftoasci(String s){
+		  final StringBuffer sb = new StringBuffer( s.length() * 2 );
+
+		  final StringCharacterIterator iterator = new StringCharacterIterator( s );
+
+		  char ch = iterator.current();
+		  
+		  while( ch != StringCharacterIterator.DONE ){
+		    boolean f=false;
+		    if(Character.toString(ch).equals("Ê")){sb.append("E");f=true;}
+		    if(Character.toString(ch).equals("È")){sb.append("E");f=true;}
+		    if(Character.toString(ch).equals("ë")){sb.append("e");f=true;}
+		    if(Character.toString(ch).equals("é")){sb.append("e");f=true;}
+		    if(Character.toString(ch).equals("è")){sb.append("e");f=true;}
+		    if(Character.toString(ch).equals("è")){sb.append("e");f=true;}
+		    if(Character.toString(ch).equals("Â")){sb.append("A");f=true;}
+		    if(Character.toString(ch).equals("ä")){sb.append("a");f=true;}
+		    if(Character.toString(ch).equals("ß")){sb.append("ss");f=true;}
+		    if(Character.toString(ch).equals("Ç")){sb.append("C");f=true;}
+		    if(Character.toString(ch).equals("Ö")){sb.append("O");f=true;}
+		    if(Character.toString(ch).equals("º")){sb.append("");f=true;}
+		    if(Character.toString(ch).equals("Ó")){sb.append("O");f=true;}
+		    if(Character.toString(ch).equals("ª")){sb.append("");f=true;}
+		    if(Character.toString(ch).equals("º")){sb.append("");f=true;}
+		    if(Character.toString(ch).equals("Ñ")){sb.append("N");f=true;}
+		    if(Character.toString(ch).equals("É")){sb.append("E");f=true;}
+		    if(Character.toString(ch).equals("Ä")){sb.append("A");f=true;}
+		    if(Character.toString(ch).equals("Å")){sb.append("A");f=true;}
+		    if(Character.toString(ch).equals("ä")){sb.append("a");f=true;}
+		    if(Character.toString(ch).equals("Ü")){sb.append("U");f=true;}
+		    if(Character.toString(ch).equals("ö")){sb.append("o");f=true;}
+		    if(Character.toString(ch).equals("ü")){sb.append("u");f=true;}
+		    if(Character.toString(ch).equals("á")){sb.append("a");f=true;}
+		    if(Character.toString(ch).equals("Ó")){sb.append("O");f=true;}
+		    if(Character.toString(ch).equals("É")){sb.append("E");f=true;}	    
+		    if(Character.toString(ch).equals("ó")){sb.append("o");f=true;}
+		    if(Character.toString(ch).equals("Ó")){sb.append("O");f=true;} 
+		    if(Character.toString(ch).equals("ò")){sb.append("o");f=true;} 
+		    if(Character.toString(ch).equals("Ò")){sb.append("O");f=true;}
+		    if(Character.toString(ch).equals("ô")){sb.append("o");f=true;}
+		    if(Character.toString(ch).equals("Ô")){sb.append("O");f=true;} 
+		    if(Character.toString(ch).equals("ő")){sb.append("o");f=true;}
+		    if(Character.toString(ch).equals("Ő")){sb.append("O");f=true;}
+		    if(Character.toString(ch).equals("õ")){sb.append("o");f=true;}
+		    if(Character.toString(ch).equals("Õ")){sb.append("O");f=true;} 
+		    if(Character.toString(ch).equals("ø")){sb.append("oe");f=true;} 
+		    if(Character.toString(ch).equals("Ø")){sb.append("OE");f=true;} 
+		    if(Character.toString(ch).equals("ō")){sb.append("o");f=true;} 
+		    if(Character.toString(ch).equals("Ō")){sb.append("O");f=true;} 
+		    if(Character.toString(ch).equals("ơ")){sb.append("o");f=true;}
+		    if(Character.toString(ch).equals("Ơ")){sb.append("O");f=true;}
+		    if(Character.toString(ch).equals("ö")){sb.append("oe");f=true;} 
+		    if(Character.toString(ch).equals("Ö")){sb.append("OE");f=true;} 
+		    	    
+		    if(!f){
+		     sb.append(ch);
+		    } 
+		   ch = iterator.next();
+		  }
+		  return sb.toString();
+		 }
+	
 	private String clean(String str) {
 		try{
-		    String cleaned = punct.matcher(str).replaceAll("").toLowerCase();
-	        //http://stackoverflow.com/questions/285228/how-to-convert-utf-8-to-us-ascii-in-java
-		    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFKD);
+
+			String cleaned = punct.matcher(str).replaceAll("").toLowerCase();		
+		    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFD);
 	        cleaned = diacritics.matcher(cleaned).replaceAll("");
+	        //http://stackoverflow.com/questions/285228/how-to-convert-utf-8-to-us-ascii-in-java
+			cleaned = utftoasci(cleaned);
 
 	        return cleaned;
 	        
