@@ -501,85 +501,86 @@ public class TrieResource {
 		  final StringCharacterIterator iterator = new StringCharacterIterator( s );
 		  
 		  char ch = iterator.current();
-		  
+		  		  
 		  while( ch != StringCharacterIterator.DONE ){
 		    boolean f=false;
-//		    if(Character.toString(ch).equals("Ê")){sb.append("E");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("ca") ){sb.append("E");f=true;}
-//		    if(Character.toString(ch).equals("È")){sb.append("E");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c8") ){sb.append("E");f=true;}
-//		    if(Character.toString(ch).equals("ë")){sb.append("e");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("eb") ){sb.append("e");f=true;}
-//		    if(Character.toString(ch).equals("é")){sb.append("e");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("e9") ){sb.append("e");f=true;}
-//		    if(Character.toString(ch).equals("è")){sb.append("e");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("e8") ){sb.append("e");f=true;}
-//		    if(Character.toString(ch).equals("Â")){sb.append("A");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c2") ){sb.append("A");f=true;}
-//		    if(Character.toString(ch).equals("ß")){sb.append("ss");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("df") ){sb.append("ss");f=true;}
-//		    if(Character.toString(ch).equals("Ç")){sb.append("C");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c7") ){sb.append("C");f=true;}
-//		    if(Character.toString(ch).equals("ª")){sb.append("");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("aa") ){sb.append("");f=true;}
-//		    if(Character.toString(ch).equals("º")){sb.append("");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("ba") ){sb.append("");f=true;}
-//		    if(Character.toString(ch).equals("Ñ")){sb.append("N");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d1") ){sb.append("N");f=true;}
-//		    if(Character.toString(ch).equals("É")){sb.append("E");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c9") ){sb.append("E");f=true;}
-//		    if(Character.toString(ch).equals("Ä")){sb.append("A");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c4") ){sb.append("A");f=true;}
-//		    if(Character.toString(ch).equals("Å")){sb.append("A");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c5") ){sb.append("A");f=true;}
-//		    if(Character.toString(ch).equals("ä")){sb.append("a");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("e4") ){sb.append("a");f=true;}
-//		    if(Character.toString(ch).equals("Ü")){sb.append("U");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("dc") ){sb.append("U");f=true;}
-//		    if(Character.toString(ch).equals("ö")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f6") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("ü")){sb.append("u");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("fc") ){sb.append("u");f=true;}
-//		    if(Character.toString(ch).equals("á")){sb.append("a");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("e1") ){sb.append("a");f=true;}
-//		    if(Character.toString(ch).equals("É")){sb.append("E");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("c9") ){sb.append("E");f=true;}
-//		    if(Character.toString(ch).equals("ó")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f3") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Ó")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d3") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("ò")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f2") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Ò")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d2") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("ô")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f4") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Ô")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d4") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("ő")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("151") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Ő")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("150") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("õ")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f5") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Õ")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d5") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("ø")){sb.append("oe");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f8") ){sb.append("oe");f=true;}
-//		    if(Character.toString(ch).equals("Ø")){sb.append("OE");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d8") ){sb.append("OE");f=true;}		    
-//		    if(Character.toString(ch).equals("ō")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("14d") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Ō")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("14c") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("ơ")){sb.append("o");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("1a1") ){sb.append("o");f=true;}
-//		    if(Character.toString(ch).equals("Ơ")){sb.append("O");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("1a0") ){sb.append("O");f=true;}
-//		    if(Character.toString(ch).equals("ö")){sb.append("oe");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("f6") ){sb.append("oe");f=true;}
-//		    if(Character.toString(ch).equals("Ö")){sb.append("OE");f=true;}
-		    if(  (Integer.toHexString((int)ch)).equalsIgnoreCase("d6") ){sb.append("OE");f=true;}
+		    String hex = (Integer.toHexString((int)ch));
+//		    "Ê" ==> "E"
+		    if(  hex.equalsIgnoreCase("ca") ){sb.append("E");f=true;}
+//		    "È" ==> "E"
+		    if(  hex.equalsIgnoreCase("c8") ){sb.append("E");f=true;}
+//		    "ë" ==> "e"
+		    if(  hex.equalsIgnoreCase("eb") ){sb.append("e");f=true;}
+//		    "é" ==> "e"
+		    if(  hex.equalsIgnoreCase("e9") ){sb.append("e");f=true;}
+//		    "è" ==> "e"
+		    if(  hex.equalsIgnoreCase("e8") ){sb.append("e");f=true;}
+//		    "Â" ==> "A"
+		    if(  hex.equalsIgnoreCase("c2") ){sb.append("A");f=true;}
+//		    "ß" ==> "ss"
+		    if(  hex.equalsIgnoreCase("df") ){sb.append("ss");f=true;}
+//		    "Ç" ==> "C"
+		    if(  hex.equalsIgnoreCase("c7") ){sb.append("C");f=true;}
+//		    "ª" ==> ""
+		    if(  hex.equalsIgnoreCase("aa") ){sb.append("");f=true;}
+//		    "º" ==> ""
+		    if(  hex.equalsIgnoreCase("ba") ){sb.append("");f=true;}
+//		    "Ñ" ==> "N"
+		    if(  hex.equalsIgnoreCase("d1") ){sb.append("N");f=true;}
+//		    "É" ==> "E"
+		    if(  hex.equalsIgnoreCase("c9") ){sb.append("E");f=true;}
+//		    "Ä" ==> "A"
+		    if(  hex.equalsIgnoreCase("c4") ){sb.append("A");f=true;}
+//		    "Å" ==> "A"
+		    if(  hex.equalsIgnoreCase("c5") ){sb.append("A");f=true;}
+//		    "ä" ==> "a"
+		    if(  hex.equalsIgnoreCase("e4") ){sb.append("a");f=true;}
+//		    "Ü" ==> "U"
+		    if(  hex.equalsIgnoreCase("dc") ){sb.append("U");f=true;}
+//		    "ö" ==> "o"
+		    if(  hex.equalsIgnoreCase("f6") ){sb.append("o");f=true;}
+//		    "ü" ==> "u"
+		    if(  hex.equalsIgnoreCase("fc") ){sb.append("u");f=true;}
+//		    "á" ==> "a"
+		    if(  hex.equalsIgnoreCase("e1") ){sb.append("a");f=true;}
+//		    "É" ==> "E"
+		    if(  hex.equalsIgnoreCase("c9") ){sb.append("E");f=true;}
+//		    "ó" ==> "o"
+		    if(  hex.equalsIgnoreCase("f3") ){sb.append("o");f=true;}
+//		    "Ó" ==> "O"
+		    if(  hex.equalsIgnoreCase("d3") ){sb.append("O");f=true;}
+//		    "ò" ==> "o"
+		    if(  hex.equalsIgnoreCase("f2") ){sb.append("o");f=true;}
+//		    "Ò" ==> "O"
+		    if(  hex.equalsIgnoreCase("d2") ){sb.append("O");f=true;}
+//		    "ô" ==> "o"
+		    if(  hex.equalsIgnoreCase("f4") ){sb.append("o");f=true;}
+//		    "Ô" ==> "O"
+		    if(  hex.equalsIgnoreCase("d4") ){sb.append("O");f=true;}
+//		    "ő" ==> "o"
+		    if(  hex.equalsIgnoreCase("151") ){sb.append("o");f=true;}
+//		    "Ő" ==> "O"
+		    if(  hex.equalsIgnoreCase("150") ){sb.append("O");f=true;}
+//		    "õ" ==> "o"
+		    if(  hex.equalsIgnoreCase("f5") ){sb.append("o");f=true;}
+//		    "Õ" ==> "O"
+		    if(  hex.equalsIgnoreCase("d5") ){sb.append("O");f=true;}
+//		    "ø" ==> "oe"
+		    if(  hex.equalsIgnoreCase("f8") ){sb.append("oe");f=true;}
+//		    "Ø" ==> "OE"
+		    if(  hex.equalsIgnoreCase("d8") ){sb.append("OE");f=true;}		    
+//		    "ō" ==> "o"
+		    if(  hex.equalsIgnoreCase("14d") ){sb.append("o");f=true;}
+//		    "Ō" ==> "O"
+		    if(  hex.equalsIgnoreCase("14c") ){sb.append("O");f=true;}
+//		    "ơ" ==> "o"
+		    if(  hex.equalsIgnoreCase("1a1") ){sb.append("o");f=true;}
+//		    "Ơ" ==> "O"
+		    if(  hex.equalsIgnoreCase("1a0") ){sb.append("O");f=true;}
+//		    "ö" ==> "oe"
+		    if(  hex.equalsIgnoreCase("f6") ){sb.append("oe");f=true;}
+//		    "Ö" ==> "OE"
+		    if(  hex.equalsIgnoreCase("d6") ){sb.append("OE");f=true;}
 		    		    
 		    if(!f){
 		     sb.append(ch);
