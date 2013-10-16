@@ -5,3 +5,7 @@
 Gemfile.lock
 .gem
 .DS_STORE
+/bin
+.classpath
+.project
+.settings/
