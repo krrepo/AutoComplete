@@ -15,10 +15,9 @@ package com.glg.trie;
  */
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A data structure for rank-sensitive autocomplete. It provides O(log <i>n</i>)
@@ -72,6 +71,7 @@ public class SuggestTree {
     private Node root;
     private int size;
     private boolean replaceWithSuccessor;
+	private final static Logger logger = LoggerFactory.getLogger(SuggestTree.class);
 
     /**
      * Creates a tree that returns the top {@code k} highest weighted
@@ -117,14 +117,17 @@ public class SuggestTree {
         int i = 0;
         Node n = root;
         while(n != null) {
-            if(prefix.charAt(i) < n.firstChar)
+            if(prefix.charAt(i) < n.firstChar) {
                 n = n.left;
-            else if(prefix.charAt(i) > n.firstChar)
+            }
+            else if(prefix.charAt(i) > n.firstChar) {
                 n = n.right;
+            }
             else {
                 for(i++; i < n.charEnd && i < prefix.length(); i++) {
-                    if(prefix.charAt(i) != n.suggestion.charAt(i))
+                    if(prefix.charAt(i) != n.suggestion.charAt(i)) {
                         return null;
+                    }
                 }
                 if(i < prefix.length())
                     n = n.mid;

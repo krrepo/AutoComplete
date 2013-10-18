@@ -7,17 +7,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.map.LRUMap;
-
-import au.com.bytecode.opencsv.CSVWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Trie {
+	private final static Logger logger = LoggerFactory.getLogger(Trie.class);
 	boolean nonMutable = false;
 	int maxSize = -1;
 	//LRUMap<String, Integer>
@@ -204,6 +202,7 @@ public class Trie {
 			Node n = tree.getSuggestions(key);
 			if (n!=null){
 				for (int i = 0; i < n.size(); i++){
+					
 					if (n.getDisplay(i) != null && n.getDisplay(i).length() > 0){
 						out.add(new Entry<String, String, String>(n.get(i), n.getValue(i), n.getDisplay(i)));
 					}else{
