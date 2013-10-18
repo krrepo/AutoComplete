@@ -9,3 +9,4 @@ Gemfile.lock
 .classpath
 .project
 .settings/
+data/
