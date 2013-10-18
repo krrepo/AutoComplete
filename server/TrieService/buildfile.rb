@@ -47,8 +47,7 @@ define "TrieService" do
   manifest["Git-Hash"] = GITHASH[0..39]
 
   compile.with transitive(CCOLLECTIONS, GRIZZLYFW, JCORE, JAVAX, JAXBAPI224 , JAXBIMPL224, JERSEYCORE, JERSEYGRIZZLY, JERSEYJSON, JERSEYMULTIPART, JERSEYSERVER, JERSEYSPRING, JETTISON, JSR, LBACK_CLASSIC, OAUTHSRVR, OPENCSV, PERSISTENCE, SLF4J, NETTY, JACKSONDATABIND, SOCKETIO)
-    
-#  compile.with './prebuilt/netty-socketio-1.0.1-SNAPSHOT.jar'
+
   compile.from './src'
 
   # Create the jar
