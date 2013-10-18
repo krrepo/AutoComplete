@@ -210,8 +210,15 @@
           if (hasClass(dropdown.childNodes[i],'glg-autocomplete-focus')) {
             var dropdownRow = dropdown.childNodes[i].children[0];
             var key = dropdownRow.getAttribute('glg-autocomplete-key');
-            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
-            setSelectionValue(target,key,value);
+//            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
+            var value =  dropdownRow.innerHTML.replace(/&amp;/g,"&");
+			// Ordering the arguments so that the names match the signature of 
+			// setSelectionValue causes the wrong text to be displayed; reversing
+			// key and value produces the correct result.
+			// See the similar call in listItemClick, which always displayed the 
+			// correct thing, and always had the arguments "reversed". 
+			// The "real" bug may be further down the line?
+            setSelectionValue(target,value,key); 
           }
         }
       }
@@ -322,7 +329,21 @@
                   dropdown += '  <li class="glg-autocomplete-item glg-autocomplete-focus" role="presentation">';
                   entityDataHit = true;
                 }
-                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+entities[i].key+'" glg-autocomplete-value="'+entities[i].value+'" tabindex="-1">' + entities[i].key + '</a>';
+
+		         display = entities[i].display;
+				 key = entities[i].key;
+				 value =entities[i].value;
+
+				 // If display exists, us it as is.
+				 // Otherwise, use value, stripped of quotation marks.
+				 if ((display == null) || (display.length == 0)) {
+					 if (value.charAt(0) == '"') {
+				 	    display = value.substring(1,value.length-1) ; // Get rid of quotation marks
+				     }
+				 }
+		 
+                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+ key +'" glg-autocomplete-value="'+ value +'" tabindex="-1">' + display + '</a>';
+              
                 dropdown += '  </li>';
                 if (entities[i].value.toLowerCase() == target.value.toLowerCase()) {
                   drawAddToItem = false;
@@ -374,7 +395,7 @@
  
     function listItemClick(event) {
       var target = getTarget(event);
-      var value = event.target.innerHTML;
+      var value = event.target.innerHTML.replace(/&amp;/g,"&");
       var key =  event.target.getAttribute("glg-autocomplete-value")
       var dropdownKey = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
       var allInputs = document.getElementsByTagName("input"); // Get all input controls
