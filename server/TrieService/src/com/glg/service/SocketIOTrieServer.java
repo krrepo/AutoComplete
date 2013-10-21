@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
+import java.text.StringCharacterIterator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -15,15 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-import com.corundumstudio.socketio.AckCallback;
-import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.VoidAckCallback;
-import com.corundumstudio.socketio.listener.DataListener;
 import com.glg.service.resources.TrieDataListner;
-import com.glg.service.resources.TrieResource;
 import com.glg.trie.Trie;
 
 
@@ -95,9 +90,9 @@ public class SocketIOTrieServer {
 			
 			CSVReader reader = null;
 			if (f.getName().endsWith("csv.gz")){
-				reader = new CSVReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(f))));
+				reader = new CSVReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(f)), "UTF-8"));
 			}else if (f.getName().endsWith("csv")){
-				reader = new CSVReader(new InputStreamReader(new FileInputStream(f)));
+				reader = new CSVReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
 			}
 			
 			String name = f.getName();
@@ -165,10 +160,115 @@ public class SocketIOTrieServer {
 		}
 	}
 	
-	private String clean(String str) {
-		String cleaned = punct.matcher(str).replaceAll("").toLowerCase();
-	    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFD); 
-	    return diacritics.matcher(cleaned).replaceAll("");
-	}
+	private synchronized static String utftoasci(String s){
+		  final StringBuffer sb = new StringBuffer( s.length() * 2 );
+
+		  final StringCharacterIterator iterator = new StringCharacterIterator( s );
+		  
+		  char ch = iterator.current();
+		  		  
+		  while( ch != StringCharacterIterator.DONE ){
+		    boolean f=false;
+		    String hex = (Integer.toHexString((int)ch));
+//		    "Ê" ==> "E"
+		    if(  hex.equalsIgnoreCase("ca") ){sb.append("E");f=true;}
+//		    "È" ==> "E"
+		    if(  hex.equalsIgnoreCase("c8") ){sb.append("E");f=true;}
+//		    "ë" ==> "e"
+		    if(  hex.equalsIgnoreCase("eb") ){sb.append("e");f=true;}
+//		    "é" ==> "e"
+		    if(  hex.equalsIgnoreCase("e9") ){sb.append("e");f=true;}
+//		    "è" ==> "e"
+		    if(  hex.equalsIgnoreCase("e8") ){sb.append("e");f=true;}
+//		    "Â" ==> "A"
+		    if(  hex.equalsIgnoreCase("c2") ){sb.append("A");f=true;}
+//		    "ß" ==> "ss"
+		    if(  hex.equalsIgnoreCase("df") ){sb.append("ss");f=true;}
+//		    "Ç" ==> "C"
+		    if(  hex.equalsIgnoreCase("c7") ){sb.append("C");f=true;}
+//		    "ª" ==> ""
+		    if(  hex.equalsIgnoreCase("aa") ){sb.append("");f=true;}
+//		    "º" ==> ""
+		    if(  hex.equalsIgnoreCase("ba") ){sb.append("");f=true;}
+//		    "Ñ" ==> "N"
+		    if(  hex.equalsIgnoreCase("d1") ){sb.append("N");f=true;}
+//		    "É" ==> "E"
+		    if(  hex.equalsIgnoreCase("c9") ){sb.append("E");f=true;}
+//		    "Ä" ==> "A"
+		    if(  hex.equalsIgnoreCase("c4") ){sb.append("A");f=true;}
+//		    "Å" ==> "A"
+		    if(  hex.equalsIgnoreCase("c5") ){sb.append("A");f=true;}
+//		    "ä" ==> "a"
+		    if(  hex.equalsIgnoreCase("e4") ){sb.append("a");f=true;}
+//		    "Ü" ==> "U"
+		    if(  hex.equalsIgnoreCase("dc") ){sb.append("U");f=true;}
+//		    "ö" ==> "o"
+		    if(  hex.equalsIgnoreCase("f6") ){sb.append("o");f=true;}
+//		    "ü" ==> "u"
+		    if(  hex.equalsIgnoreCase("fc") ){sb.append("u");f=true;}
+//		    "á" ==> "a"
+		    if(  hex.equalsIgnoreCase("e1") ){sb.append("a");f=true;}
+//		    "É" ==> "E"
+		    if(  hex.equalsIgnoreCase("c9") ){sb.append("E");f=true;}
+//		    "ó" ==> "o"
+		    if(  hex.equalsIgnoreCase("f3") ){sb.append("o");f=true;}
+//		    "Ó" ==> "O"
+		    if(  hex.equalsIgnoreCase("d3") ){sb.append("O");f=true;}
+//		    "ò" ==> "o"
+		    if(  hex.equalsIgnoreCase("f2") ){sb.append("o");f=true;}
+//		    "Ò" ==> "O"
+		    if(  hex.equalsIgnoreCase("d2") ){sb.append("O");f=true;}
+//		    "ô" ==> "o"
+		    if(  hex.equalsIgnoreCase("f4") ){sb.append("o");f=true;}
+//		    "Ô" ==> "O"
+		    if(  hex.equalsIgnoreCase("d4") ){sb.append("O");f=true;}
+//		    "ő" ==> "o"
+		    if(  hex.equalsIgnoreCase("151") ){sb.append("o");f=true;}
+//		    "Ő" ==> "O"
+		    if(  hex.equalsIgnoreCase("150") ){sb.append("O");f=true;}
+//		    "õ" ==> "o"
+		    if(  hex.equalsIgnoreCase("f5") ){sb.append("o");f=true;}
+//		    "Õ" ==> "O"
+		    if(  hex.equalsIgnoreCase("d5") ){sb.append("O");f=true;}
+//		    "ø" ==> "oe"
+		    if(  hex.equalsIgnoreCase("f8") ){sb.append("oe");f=true;}
+//		    "Ø" ==> "OE"
+		    if(  hex.equalsIgnoreCase("d8") ){sb.append("OE");f=true;}		    
+//		    "ō" ==> "o"
+		    if(  hex.equalsIgnoreCase("14d") ){sb.append("o");f=true;}
+//		    "Ō" ==> "O"
+		    if(  hex.equalsIgnoreCase("14c") ){sb.append("O");f=true;}
+//		    "ơ" ==> "o"
+		    if(  hex.equalsIgnoreCase("1a1") ){sb.append("o");f=true;}
+//		    "Ơ" ==> "O"
+		    if(  hex.equalsIgnoreCase("1a0") ){sb.append("O");f=true;}
+//		    "ö" ==> "oe"
+		    if(  hex.equalsIgnoreCase("f6") ){sb.append("oe");f=true;}
+//		    "Ö" ==> "OE"
+		    if(  hex.equalsIgnoreCase("d6") ){sb.append("OE");f=true;}
+		    		    
+		    if(!f){
+		     sb.append(ch);
+		    } 
+		   ch = iterator.next();
+		  }
+		  return sb.toString();
+		 }
 	
+	private String clean(String str) {
+		try{
+
+			String cleaned = punct.matcher(str).replaceAll("").toLowerCase();		
+		    cleaned = Normalizer.normalize(cleaned, Normalizer.Form.NFD);
+	        cleaned = diacritics.matcher(cleaned).replaceAll("");
+	        //http://stackoverflow.com/questions/285228/how-to-convert-utf-8-to-us-ascii-in-java
+			cleaned = utftoasci(cleaned);
+
+	        return cleaned;
+	        
+	    }catch(Exception e){	
+		  logger.error("Error writing csv:" + e);
+		  return "";
+	    }
+	}
 }
