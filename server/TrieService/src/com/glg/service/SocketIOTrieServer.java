@@ -70,7 +70,7 @@ public class SocketIOTrieServer {
 		
 		Configuration config = new Configuration();
         config.setHostname("localhost");
-        config.setPort(9092);
+        config.setPort(8100);
 
         final SocketIOServer server = new SocketIOServer(config);
         logger.info("created server");

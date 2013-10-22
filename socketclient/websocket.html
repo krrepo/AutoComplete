@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script type="text/javascript">
+  function doHandShake(){
+      xmlhttp=new XMLHttpRequest()
+    
+      xmlhttp.onreadystatechange=function()
+        {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+          {
+            hsKey=xmlhttp.responseText.match(/[^:]*/);
+            WebSocketTest(hsKey[0]);
+          }
+        }
+      xmlhttp.open("POST","//10.45.205.80/socket.io/1/",false);
+      xmlhttp.send();
+  }
+</script>  
+  
+<script type="text/javascript">
+function WebSocketTest(hsKey)
+{
+
+  if ("WebSocket" in window)
+  {
+     //alert("WebSocket is supported by your Browser!");
+     // Let us open a web socket
+ 
+     var ws = new WebSocket("ws://10.45.205.80/socket.io/1/websocket/"+ hsKey);
+
+     ws.onopen = function()
+     {
+        // Web Socket is connected, send data using send()
+        message = 'ma'
+        var jsonObject = {'@class': 'com.glg.service.TrieObject',
+                                               entity:'states', 
+                                               prefix:message};
+        ws.send('4:::'+JSON.stringify(jsonObject));
+        alert("Message is sent...");
+     };
+     ws.onmessage = function (evt) 
+     { 
+        var received_msg = evt.data;
+        alert("Message is received..." + received_msg);
+     };
+     ws.onclose = function()
+     { 
+        // websocket is closed.
+        alert("Connection is closed..."); 
+     };
+
+  }
+  else
+  {
+     // The browser doesn't support WebSocket
+     alert("WebSocket NOT supported by your Browser!");
+  }
+ 
+  
+}
+</script>
+</head>
+<body>
+<div id="sse">
+   <a href="javascript:doHandShake()">Run WebSocket</a>
+</div>
+</body>
+</html>
