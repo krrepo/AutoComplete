@@ -77,7 +77,7 @@
       var now = new Date(); 
       var time = now.getHours()+':'+now.getMinutes()+':'+now.getSeconds()+':'+now.getMilliseconds();
    
-      output(time + ' sending data...');
+      output(time + ' sending data...' + word);
       ws.send('4:::'+JSON.stringify(jsonObject));
     }
   };
