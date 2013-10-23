@@ -1,69 +1,86 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script type="text/javascript">
-  function doHandShake(){
+
+ <link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.1.1/css/bootstrap.min.css"/>
+ 
+ <script type="text/javascript">
+  //global object for websocket object
+  var ws;
+ </script>
+ 
+ <script type="text/javascript">
+
+  if (!ws){
+    try {
       xmlhttp=new XMLHttpRequest()
     
-      xmlhttp.onreadystatechange=function()
-        {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-          {
-            hsKey=xmlhttp.responseText.match(/[^:]*/);
-            WebSocketTest(hsKey[0]);
-          }
+      xmlhttp.onreadystatechange=function() {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+        hsKey=xmlhttp.responseText.match(/[^:]*/);
+        ws = new WebSocket("ws://10.45.205.80/socket.io/1/websocket/"+ hsKey[0]);
         }
-      xmlhttp.open("POST","//10.45.205.80/socket.io/1/",false);
+      }
+      xmlhttp.open("POST","//10.45.205.80/socket.io/1/", false);
       xmlhttp.send();
-  }
+    } catch (e) { alert('Unable to establish websocket') }
+  };
+
 </script>  
   
 <script type="text/javascript">
-function WebSocketTest(hsKey)
-{
-
-  if ("WebSocket" in window)
-  {
-     //alert("WebSocket is supported by your Browser!");
-     // Let us open a web socket
- 
-     var ws = new WebSocket("ws://10.45.205.80/socket.io/1/websocket/"+ hsKey);
-
-     ws.onopen = function()
-     {
-        // Web Socket is connected, send data using send()
-        message = 'ma'
-        var jsonObject = {'@class': 'com.glg.service.TrieObject',
-                                               entity:'states', 
-                                               prefix:message};
-        ws.send('4:::'+JSON.stringify(jsonObject));
-        alert("Message is sent...");
-     };
-     ws.onmessage = function (evt) 
-     { 
-        var received_msg = evt.data;
-        alert("Message is received..." + received_msg);
-     };
-     ws.onclose = function()
-     { 
-        // websocket is closed.
-        alert("Connection is closed..."); 
-     };
-
-  }
-  else
-  {
-     // The browser doesn't support WebSocket
-     alert("WebSocket NOT supported by your Browser!");
-  }
- 
   
-}
+  ws.onmessage = function (evt) {
+    var entity=document.getElementById("entity").value; 
+    var regexp = /([^:]+):([0-9]+)?(\+)?:([^:]+)?:?([\s\S]*)?/;
+    var pieces = evt.data.match(regexp);
+    //check for our of interest data
+    if (!pieces[5]) return;
+    try {
+      data = JSON.parse(pieces[5]);
+    } catch (e) { return }
+
+    for (entityData in data) {
+      var entities = data[entityData];
+        for (i=0; i< entities[entity].length; i++){
+          var item = entities[entity][i];
+          output( item.display );
+        }
+    }
+  };
+  ws.onopen = function() {};
+  ws.onclose = function() {};
+  
 </script>
+
+<script type="text/javascript">
+
+  function sendMsg() {
+    var entity=document.getElementById("entity").value;
+    var msg=document.getElementById("msg").value;
+    var jsonObject = {'@class': 'com.glg.service.TrieObject',
+                                               entity:entity, 
+                                               prefix:msg};
+    ws.send('4:::'+JSON.stringify(jsonObject));
+  };
+
+  function output(message) {
+    var div = document.createElement("div")
+    div.textContent = message;
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(div);
+    document.getElementById("console").appendChild( fragment );
+  };
+</script>
+
 </head>
 <body>
-<div id="sse">
-   <a href="javascript:doHandShake()">Run WebSocket</a>
-</div>
+    <form class="well form-inline" onsubmit="return false;">
+      <input id="entity" class="input-small" type="text" value="cm" />
+      <input id="msg" class="input-xlarge" type="text" placeholder="Type something..."/>
+      <button type="button" onClick="sendMsg()" class="btn">Send</button>
+    </form>
+  	<div id="console" class="well">
+  	</div>
 </body>
 </html>

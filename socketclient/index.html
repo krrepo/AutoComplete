@@ -27,7 +27,7 @@
 	
 	<script>
 
-		var socket =  io.connect('http://localhost:9092');
+		var socket =  io.connect('http://10.45.205.80:80');
 
 		socket.on('connect', function() {
 			output('<span class="connect-msg">Client has connected to the Trie service.</span>');
