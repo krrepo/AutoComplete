@@ -40,7 +40,6 @@
     //check for our of interest data
     if (!pieces[5]) {
       //check ping-pong
-      output(evt.data);
       pieces[1] === '2' ? ws.send('2:::') : {};
       return;
     }
@@ -68,14 +67,19 @@
 
     var entity=document.getElementById("entity").value;
     var msg=document.getElementById("msg").value;
-    var jsonObject = {'@class': 'com.glg.service.TrieObject',
+    var word=item="";
+    for (i=0; i<msg.length;i++){
+      item=msg[i];
+      word+=item;
+      var jsonObject = {'@class': 'com.glg.service.TrieObject',
                                                entity:entity, 
-                                               prefix:msg};
-    var now = new Date(); 
-    var time = now.getHours()+':'+now.getMinutes()+':'+now.getSeconds()+':'+now.getMilliseconds();
+                                               prefix:word};
+      var now = new Date(); 
+      var time = now.getHours()+':'+now.getMinutes()+':'+now.getSeconds()+':'+now.getMilliseconds();
    
-    output(time + ' sending data...');
-    ws.send('4:::'+JSON.stringify(jsonObject));
+      output(time + ' sending data...');
+      ws.send('4:::'+JSON.stringify(jsonObject));
+    }
   };
 
   function output(message) {
