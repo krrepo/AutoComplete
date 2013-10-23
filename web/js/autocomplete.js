@@ -227,12 +227,6 @@
             var value = dropdownRow.getAttribute('glg-autocomplete-value');
             var display =  dropdownRow.getAttribute('glg-autocomplete-display');
             var preventHide = dropdownRow.getAttribute('glg-autocomplete-preventHide');
-            // Ordering the arguments so that the names match the signature of
-            // setSelectionValue causes the wrong text to be displayed; reversing
-            // key and value produces the correct result.
-            // See the similar call in listItemClick, which always displayed the 
-            // correct thing, and always had the arguments "reversed". 
-            // The "real" bug may be further down the line?
             setSelectionValue(target,key,value,display,'keypress',dropdownRow,preventHide);
           }
         }
@@ -391,9 +385,7 @@
 
                 // If display exists, us it as is, otherwise use value, stripped of quotation marks.
                 if ((display == null) || (display.length == 0)) {
-                  if (value.charAt(0) == '"') {
-                    display = value.substring(1,value.length-1) ; // Get rid of quotation marks
-                  }
+                  display = value
                 }
                 if (typeof options.rowRenderer === 'function') {
                   dropdown += options.rowRenderer(i, key, value, display);
