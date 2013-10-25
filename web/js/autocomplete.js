@@ -1,9 +1,9 @@
 // Autocomplete
 (function() {
-  
+
   // Autocomplete Core
   var autocomplete = function(passedOptions) {
- 
+
     function getOptions(inputControl) {
       var options = [];
       // Get Passed Options
@@ -39,6 +39,63 @@
       }
       return options;
     };
+
+    //global websocket object
+    var ws;
+    //global msg item
+    var msgItem;
+    function msgInfo(target, options) {
+      this.target = target;
+      this.options = options;
+    }
+    function setMsgInfo(target, options) {
+      msgItem = new msgInfo(target, options);
+    }
+
+    if (!ws){
+      var options = getOptions();
+      //see if socketIO is true for any Object
+      for (var i=0; i<options.length; i++) {
+        if (options[i].webSocket)
+          var url = options[i].source;
+          try {
+            xmlhttp=new XMLHttpRequest()
+            xmlhttp.onreadystatechange=function() {
+              if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                hsKey=xmlhttp.responseText.match(/[^:]*/);
+                ws = new WebSocket("ws:"+url+"websocket/"+ hsKey[0]);
+                setwsEvents();
+              }
+            }
+            xmlhttp.open("POST", url, false);
+            xmlhttp.send();
+          } catch (e) { alert('Unable to establish websocket.') }
+        break;
+      }
+    };
+    //set ws events
+    function setwsEvents(){
+      ws.onmessage = function (evt) {
+
+        var regexp = /([^:]+):([0-9]+)?(\+)?:([^:]+)?:?([\s\S]*)?/;
+        var pieces = evt.data.match(regexp);
+        //check for our of interest data
+        if (!pieces[5]) {
+          //check for closing and prevent action
+          pieces[1] === '2' ? ws.send('2:::') : {};
+          return;
+        }
+        try {
+          data = JSON.parse(pieces[5]);
+        } catch (e) { return }
+
+        renderDropdown(msgItem.target, data, msgItem.options);
+
+      };
+      ws.onopen = function() {};
+      ws.onclose = function() {alert('Socket has closed - refresh browser to restablish.')};
+    };
+
     function checkForInputMatch(input,options) {
       input = getObjectFromId(input);
       options.element = getObjectFromId(options.element);
@@ -121,6 +178,7 @@
         positionAllDropdowns();
       }
     };
+
     function setTheEvents(elements, events) {
       var optionElements = [];
       var elementsType = Object.prototype.toString.call(elements);
@@ -289,6 +347,7 @@
       var target = getTarget(event);
       var value = event.target.innerHTML;
       var attributes = getOptions(targetInput)
+      var options = getOptions(target);
       if (typeof attributes.updateSource !== 'undefined') {
         var counter = 0;
         var currentEntity;
@@ -301,11 +360,15 @@
            return;
          }
           var url = attributes.updateSource;
-          url+="?entity="+currentEntity+"&value="+value;
-          var serviceTermsElement = document.createElement('script');
-          serviceTermsElement.type = "text/javascript";
-          serviceTermsElement.src = url+"&callback=callbackST";
-          document.getElementsByTagName('head')[0].appendChild(serviceTermsElement);
+          if (!url.search(socketio)){
+            url+="?entity="+currentEntity+"&value="+value;
+            var serviceTermsElement = document.createElement('script');
+            serviceTermsElement.type = "text/javascript";
+            serviceTermsElement.src = url+"&callback=callbackST";
+            document.getElementsByTagName('head')[0].appendChild(serviceTermsElement);
+          } else{
+            sendSocketMessage(options, currentEntity, value);
+          }
         }
       }
     };
@@ -325,14 +388,30 @@
       }
     }
     function getDataAndRenderDropDown(target, event) {
-      var options = getOptions((getTarget(event)));
+      var options = getOptions(getTarget(event));
       var url = options.source + "?value="+encodeURIComponent(target.value);
       for (optionItem in options.entities) {
         if (options.entities.hasOwnProperty(optionItem)) {
           url+="&entity="+encodeURIComponent(optionItem);
         }
-      }      
+      }
+
+      sendSocketMessage = function (currentEntity, value) {
+        var entity=currentEntity;
+        var msg=value;
+        var jsonObject = {'@class': 'com.glg.service.TrieObject',
+          entity:entity,
+          prefix:msg};
+        ws.send('4:::'+JSON.stringify(jsonObject));
+      }
+
       if (target.value !== "") {
+        if (options.webSocket){
+          setMsgInfo(target, options);
+          sendSocketMessage(encodeURIComponent(optionItem), encodeURIComponent(target.value)) ;
+          return;
+        }
+
         var timeIndex = new Date().getTime().toString();
  
         callbackRD = function (data) {
@@ -342,7 +421,7 @@
             scriptTag.parentNode.removeChild(scriptTag);
           }
         }
- 
+
         var dropdownElement = document.createElement('script');
         dropdownElement.type = "text/javascript";
         dropdownElement.src = url+"&callback=callbackRD&"+timeIndex;
@@ -457,8 +536,6 @@
         );
         target.dispatchEvent(selectEvent);
       }
-
- 
     }
  
     function getAncestorAttribute(element,attribute) {
@@ -703,7 +780,7 @@
     // Utilities
     // *********
     function getAutocompleteAttributes(input) {
-      var autocompleteAttributeMap = {'entities':'glg-autocomplete-entities','source':'glg-autocomplete-source','updateSource':'glg-autocomplete-updateSource','multiSelect':'glg-autocomplete-multiselect'};
+      var autocompleteAttributeMap = {'entities':'glg-autocomplete-entities','source':'glg-autocomplete-source','updateSource':'glg-autocomplete-updateSource','multiSelect':'glg-autocomplete-multiselect','webSocket':'glg-autocomplete-websocket'};
       var autocompleteAttributes;
       for(var key in autocompleteAttributeMap) {
         if (autocompleteAttributeMap.hasOwnProperty(key)) {
@@ -713,6 +790,12 @@
               autocompleteAttributes = {};
             }
             if ( key === "multiSelect") {
+              var myBoolean = attribute === "true";
+              autocompleteAttributes[key] = myBoolean;
+            } else {
+              autocompleteAttributes[key] = attribute;
+            }
+            if ( key === "webSocket") {
               var myBoolean = attribute === "true";
               autocompleteAttributes[key] = myBoolean;
             } else {
@@ -836,6 +919,7 @@
       element.setAttribute('class',classes.join(" "));
       return true;
     };
+
     if (typeof CustomEvent === 'object') {
       function CustomEvent ( event, params ) {
         params = params || { bubbles: false, cancelable: false, detail: undefined };
@@ -843,16 +927,17 @@
         evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
         return evt;
       };
-    }
-    // Initialization Functions
-    if (document.readyState === "complete") {
-      init();
+    };
+
+  // Initialization Functions
+  if (document.readyState === "complete") {
+    init();
     } else {
-      window.onload = function() {
-        init();
-      };
-    }
+    window.onload = function() {
+      init();
+    };
   }
+ }
  
   // Library Detection
   if (typeof define === "function") {     // RequireJS
