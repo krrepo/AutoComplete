@@ -1,6 +1,7 @@
+// Autocomplete
 (function() {
   
-// Autocomplete Core
+  // Autocomplete Core
   var autocomplete = function(passedOptions) {
  
     function getOptions(inputControl) {
@@ -58,14 +59,26 @@
     window.onresize = function(event) {
       positionAllDropdowns();    
     }
+    function focusOutHandler(event){
+      if (event.relatedTarget !== null) {
+        if(!event.relatedTarget.hasAttribute("glg-autocomplete-preventHide")) {
+          hideDropdown(getTarget(event));
+        } else {
+          event.relatedTarget.addEventListener("focusout", focusOutHandler);
+        }
+      } else {
+        hideDropdown(getTarget(event));
+      }
+    }
+
     var inputEvents = {
       'focusin':function(event) {
         showDropdown(getTarget(event));
       },
       'focusout':function(event) {
-        setTimeout(function(){
-          hideDropdown(getTarget(event));               
-        },200)
+        setTimeout(function() {
+          focusOutHandler(event);
+        },200);
       },
       'keydown':function(event) {
         if (event.which === 9) {        // Tab key
@@ -73,7 +86,8 @@
           hideDropdown(getTarget(event));
         }
       },
-      'keyup':function(event) {      
+      'keyup':function(event) {
+        checkForSelectionAttributeMatch(event.target);
         if (event.which == 38) {        // Up arrow key
           moveUpList(event);
         } else if (event.which == 40) { // Down arrow key
@@ -153,7 +167,7 @@
       var dropdown = getDropdown(target);
       var currentIndex;
       if (typeof dropdown !== 'undefined') {
-        for (var i=0; i<dropdown.childNodes.length; i++) {
+        for (var i=1; i<dropdown.childNodes.length; i++) {
           if(hasClass(dropdown.childNodes[i],'glg-autocomplete-focus')) {
             currentIndex = i;
           }
@@ -161,7 +175,7 @@
         removeClass(dropdown.childNodes[currentIndex],'glg-autocomplete-focus');
         currentIndex--;
         var initialItemSet = false;        
-        for (var i=currentIndex; i>0; i--) {
+        for (var i=currentIndex; i>=0; i--) {
           if(hasClass(dropdown.childNodes[i],'glg-autocomplete-item')) {
             if (initialItemSet != true) {
               addClass(dropdown.childNodes[i],'glg-autocomplete-focus');
@@ -210,48 +224,66 @@
           if (hasClass(dropdown.childNodes[i],'glg-autocomplete-focus')) {
             var dropdownRow = dropdown.childNodes[i].children[0];
             var key = dropdownRow.getAttribute('glg-autocomplete-key');
-//            var value =  dropdownRow.getAttribute('glg-autocomplete-value');
-            var value =  dropdownRow.innerHTML.replace(/&amp;/g,"&");
-			// Ordering the arguments so that the names match the signature of 
-			// setSelectionValue causes the wrong text to be displayed; reversing
-			// key and value produces the correct result.
-			// See the similar call in listItemClick, which always displayed the 
-			// correct thing, and always had the arguments "reversed". 
-			// The "real" bug may be further down the line?
-            setSelectionValue(target,value,key); 
+            var value = dropdownRow.getAttribute('glg-autocomplete-value');
+            var display =  dropdownRow.getAttribute('glg-autocomplete-display');
+            var preventHide = dropdownRow.getAttribute('glg-autocomplete-preventHide');
+            setSelectionValue(target,key,value,display,'keypress',dropdownRow,preventHide);
           }
         }
       }
     };
-    function setSelectionValue(input,key,value) {
+    function setSelectionValue(input,key,value,display,type,dropdownRow,preventHide) {
       var options = getOptions(input);
       multiSelect = options.multiSelect
       if (multiSelect) {
         // Add the Clicked Item to the MultiSelect
         var multiSelectItems = getMultiSelectItems(input);
         if (typeof multiSelectItems === 'undefined') {
-          createMultiSelectItems(input,key);
+          createMultiSelectItems(input,display);
         } else {
-          addToMultiSelectItems(input,multiSelectItems,key)
+          addToMultiSelectItems(input,multiSelectItems,display)
         }
       } else {
         // Add the Clicked Item Directly to the Input
-        input.value = key;
-        input.setAttribute("glg-autocomplete-value",value);
+        input.value = display;
         input.setAttribute("glg-autocomplete-key",key);
+        input.setAttribute("glg-autocomplete-value",value);
+        input.setAttribute("glg-autocomplete-display",display);
+      }
+ 
+      // Fire Custom Event - Does not support IE6
+      if ("dispatchEvent" in input) {
+        var selectEvent = new CustomEvent(
+          "glgAutocompleteSelect",
+          {
+            detail: {
+              key: key,
+              value: value,
+              display: display,
+              type: type,
+              dropdown: dropdownRow
+            },
+            bubbles: true,
+            cancelable: true
+          }
+        );
+        input.dispatchEvent(selectEvent);
       }
  
       // Fire Change Event
       if ("fireEvent" in input) {
         input.fireEvent("onchange");
       } else {
-        var selectEvent = document.createEvent("HTMLEvents");
-        selectEvent.initEvent("change", false, true);
-        input.dispatchEvent(selectEvent);
+        var changeEvent = document.createEvent("HTMLEvents");
+        changeEvent.initEvent("change", false, true);
+        input.dispatchEvent(changeEvent);
       }
  
       // Hide Dropdown
-      hideDropdown(input);
+      if (typeof preventHide === 'undefined') {
+        hideDropdown(input);
+      }
+ 
     }
     function updateServiceTerms(targetInput,event) {
       var target = getTarget(event);
@@ -281,6 +313,17 @@
     // ******
     // Render
     // ******
+    function checkForSelectionAttributeMatch(input) {
+      var displayAttribute = input.getAttribute('glg-autocomplete-display');
+      var inputText =  input.value;
+      if (displayAttribute !== null && inputText !== "") {
+        if (displayAttribute !== inputText) {
+          input.removeAttribute('glg-autocomplete-key');
+          input.removeAttribute('glg-autocomplete-value');
+          input.removeAttribute('glg-autocomplete-display');
+        }
+      }
+    }
     function getDataAndRenderDropDown(target, event) {
       var options = getOptions((getTarget(event)));
       var url = options.source + "?value="+encodeURIComponent(target.value);
@@ -290,13 +333,20 @@
         }
       }      
       if (target.value !== "") {
-
+        var timeIndex = new Date().getTime().toString();
+ 
         callbackRD = function (data) {
-         renderDropdown(target, data, options);
+          renderDropdown(target, data, options);
+          var scriptTag = document.getElementById(timeIndex);
+          if (scriptTag !== null) {
+            scriptTag.parentNode.removeChild(scriptTag);
+          }
         }
+ 
         var dropdownElement = document.createElement('script');
         dropdownElement.type = "text/javascript";
-        dropdownElement.src = url+"&callback=callbackRD";
+        dropdownElement.src = url+"&callback=callbackRD&"+timeIndex;
+        dropdownElement.id = timeIndex
         document.getElementsByTagName('head')[0].appendChild(dropdownElement);
       } else {
         removeDropdown(target);
@@ -305,6 +355,9 @@
     function renderDropdown(target, data, options) {
       removeDropdown(target);
       var dropdown = "";
+      if (typeof options.specialFirstRow !== 'undefined') {
+        dropdown += '<li glg-autocomplete-firstRow class="glg-autocomplete-item glg-autocomplete-focus">'+options.specialFirstRow()+'</li>'
+      }
       var entityCount = 0;
       var drawAddToItem = true;
       for (entityData in data) {
@@ -318,32 +371,29 @@
           var entities = data[entityData];
           if (typeof entities !== 'undefined') {
             if (entities.length > 0) {
-              if (entityCount > 1) {
+              if (entityCount > 1 || options.showCategoryNames) {
                 dropdown += '  <li class="glg-autocomplete-category">'+options.entities[entityData]+'</li>';
               }
               // Generate the dropdown code
               for (var i=0; i<entities.length; i++) {
-                if (entityDataHit) {                
-                  dropdown += '  <li class="glg-autocomplete-item" role="presentation">';
-                } else {
-                  dropdown += '  <li class="glg-autocomplete-item glg-autocomplete-focus" role="presentation">';
-                  entityDataHit = true;
+                dropdown += '  <li class="glg-autocomplete-item" role="presentation">';
+                entityDataHit = true;
+
+                display = entities[i].display;
+                key = entities[i].key;
+                value = entities[i].value;
+
+                // If display exists, us it as is, otherwise use value, stripped of quotation marks.
+                if ((display == null) || (display.length == 0)) {
+                  display = value
                 }
-
-		         display = entities[i].display;
-				 key = entities[i].key;
-				 value =entities[i].value;
-
-				 // If display exists, us it as is.
-				 // Otherwise, use value, stripped of quotation marks.
-				 if ((display == null) || (display.length == 0)) {
-					 if (value.charAt(0) == '"') {
-				 	    display = value.substring(1,value.length-1) ; // Get rid of quotation marks
-				     }
-				 }
-		 
-                dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+ key +'" glg-autocomplete-value="'+ value +'" tabindex="-1">' + display + '</a>';
-              
+                if (typeof options.rowRenderer === 'function') {
+                  dropdown += options.rowRenderer(i, key, value, display);
+                } else {
+                  dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+ key +'" glg-autocomplete-value="'+ value +'" glg-autocomplete-display="'+ display +'" tabindex="-1">' + display + '</a>';
+ 
+                }
+ 
                 dropdown += '  </li>';
                 if (entities[i].value.toLowerCase() == target.value.toLowerCase()) {
                   drawAddToItem = false;
@@ -391,13 +441,41 @@
           listElements[i].onclick = listItemClick;
         }
       }
+ 
+      // Fire Custom Event - Does not support IE6
+      if ("dispatchEvent" in target) {
+        var selectEvent = new CustomEvent(
+          "glgAutocompleteRendered",
+          {
+            detail: {
+              data: data,
+              dropdownNode: dropdownNode
+            },
+            bubbles: true,
+            cancelable: true
+          }
+        );
+        target.dispatchEvent(selectEvent);
+      }
+
+ 
+    }
+ 
+    function getAncestorAttribute(element,attribute) {
+      if (element.hasAttribute(attribute)) {
+        return element.getAttribute(attribute);
+      } else if (element.parentElement !== null) {
+        return getAncestorAttribute(element.parentElement,attribute);
+      }
     }
  
     function listItemClick(event) {
       var target = getTarget(event);
-      var value = event.target.innerHTML.replace(/&amp;/g,"&");
-      var key =  event.target.getAttribute("glg-autocomplete-value")
-      var dropdownKey = event.target.parentElement.parentElement.getAttribute('data-glg-dropdown-input');
+      var key =  getAncestorAttribute(event.target,'glg-autocomplete-key');
+      var value =  getAncestorAttribute(event.target,'glg-autocomplete-value');
+      var display = getAncestorAttribute(event.target,'glg-autocomplete-display');
+      var dropdownKey = getAncestorAttribute(event.target,'data-glg-dropdown-input');
+      var preventHide =  getAncestorAttribute(event.target,'glg-autocomplete-preventHide');
       var allInputs = document.getElementsByTagName("input"); // Get all input controls
       var multiSelect = false;
       var targetInput = "";
@@ -407,7 +485,7 @@
           var inputKey = input.getAttribute("data-glg-dropdown-input");
           if (inputKey == dropdownKey) {
             targetInput = input;
-            setSelectionValue(targetInput,value,key)
+            setSelectionValue(targetInput,key,value,display,'click',target,preventHide)
           }
         }
       }
@@ -486,11 +564,17 @@
       }
       return matchingElement;
     }
-    function positionDropdown(dropdownNode,target, show) {
+    function positionDropdown(dropdownNode, target, show) {
       // Position and Insert the Dropdown Node
-      dropdownNode.setAttribute('style','display: block; width: '+target.offsetWidth+';');
-      dropdownNode.style.left = target.offsetLeft + "px";
-      dropdownNode.style.top = target.offsetTop + target.offsetHeight + "px";
+      var options = getOptions(target);
+      if (options.width === null) {
+      } else if (typeof options.width === 'number') {
+        dropdownNode.setAttribute('style','display: block; min-width: '+options.width+';');
+      } else {
+        dropdownNode.setAttribute('style','display: block; width: '+target.offsetWidth+';');
+      }
+      dropdownNode.style.left = target.getBoundingClientRect().left + document.body.scrollLeft + "px";
+      dropdownNode.style.top = target.getBoundingClientRect().top + target.offsetHeight + document.body.scrollTop + "px";
       if (!show) {
         dropdownNode.style.display = 'none'
       }
@@ -554,6 +638,20 @@
       var dropdown = getDropdown(target)
       if (typeof(dropdown) !== 'undefined') {      
         dropdown.style.display = 'none';
+      }
+      // Fire Custom Event - Does not support IE6
+      if ("dispatchEvent" in target) {
+        var selectEvent = new CustomEvent(
+          "glgAutocompleteHidden",
+          {
+            detail: {
+              dropdownNode: dropdown
+            },
+            bubbles: true,
+            cancelable: true
+          }
+        );
+        target.dispatchEvent(selectEvent);
       }
     }
     function showDropdown(target) {
@@ -662,6 +760,12 @@
       }
     }
     function getDropdown(target) {
+      var parentClasses = target.parentElement.classList
+      for (var i=0; i<parentClasses.length; i++) {
+        if (parentClasses[i] === 'glg-autocomplete-list') {
+          return target.parentElement
+        }
+      }
       var siblings = getSiblings(target)
       for (var i=0; i<siblings.length; i++) {
         if (typeof siblings[i].getAttribute === 'function') {
@@ -732,7 +836,14 @@
       element.setAttribute('class',classes.join(" "));
       return true;
     };
- 
+    if (typeof CustomEvent === 'object') {
+      function CustomEvent ( event, params ) {
+        params = params || { bubbles: false, cancelable: false, detail: undefined };
+        var evt = document.createEvent( 'CustomEvent' );
+        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+        return evt;
+      };
+    }
     // Initialization Functions
     if (document.readyState === "complete") {
       init();
@@ -744,19 +855,19 @@
   }
  
   // Library Detection
-  if (typeof define === "function") {                 // RequireJS
+  if (typeof define === "function") {     // RequireJS
     define(function() {
       return autocomplete;
     });
-  } else {                                            // Global Object (no Library)
+  } else {                                // Global Object (no Library)
     if (typeof(glg) === 'undefined') {
-      glg = {}    
+      glg = {}
     }
     glg['autocomplete'] = autocomplete;
     autocomplete();
   }
  
-  if (typeof angular === "object") {                  // Angular
+  if (typeof angular === "object") {      // Angular
     angular.module('Autocomplete', [])
     .factory('Autocomplete', function() {
       return autocomplete;
@@ -769,5 +880,3 @@
   }
  
 })();
-
-
