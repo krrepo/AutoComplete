@@ -789,13 +789,7 @@
             if (typeof autocompleteAttributes === 'undefined') {
               autocompleteAttributes = {};
             }
-            if ( key === "multiSelect") {
-              var myBoolean = attribute === "true";
-              autocompleteAttributes[key] = myBoolean;
-            } else {
-              autocompleteAttributes[key] = attribute;
-            }
-            if ( key === "webSocket") {
+            if ( key === "multiSelect" || key === "webSocket") {
               var myBoolean = attribute === "true";
               autocompleteAttributes[key] = myBoolean;
             } else {
@@ -803,8 +797,7 @@
             }
           }  
         }
-      };
-
+      }
       // Parse the Entity
       if (typeof autocompleteAttributes !== 'undefined') {
         var tempAttributes = autocompleteAttributes.entities.split(";");
@@ -814,7 +807,6 @@
           autocompleteAttributes.entities[tempAttribute[0]] = tempAttribute[1] 
         }
       }
-
       if (typeof autocompleteAttributes === 'undefined') {
         return null;
       } else {
@@ -822,6 +814,7 @@
         return autocompleteAttributes;
       }
     };
+    
     function getTarget(evt){
      evt = evt || window.event; // get window.event if argument is falsy (in IE)
      // get srcElement if target is falsy (IE)
