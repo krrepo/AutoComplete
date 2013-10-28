@@ -81,7 +81,6 @@
     //set ws events
     function setwsEvents(){
       ws.onmessage = function (evt) {
-
         var regexp = /([^:]+):([0-9]+)?(\+)?:([^:]+)?:?([\s\S]*)?/;
         var pieces = evt.data.match(regexp);
         //check for our of interest data
@@ -92,10 +91,10 @@
         }
         try {
           data = JSON.parse(pieces[5]);
-        } catch (e) { return }
-
+        } catch (e) { 
+          return;
+        }
         renderDropdown(msgItem.target, data.suggestions, msgItem.options);
-
       };
       ws.onopen = function() {};
       ws.onclose = function() {
@@ -407,7 +406,7 @@
 
       if (target.value !== "") {
         sendSocketMessage = function () {
-          var msg= encodeURIComponent(target.value);
+          var msg=target.value;
           var jsonObject = {'@class': 'com.glg.service.TrieObject',
             entity:entity,
             prefix:msg};
