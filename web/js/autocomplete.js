@@ -89,7 +89,7 @@
           data = JSON.parse(pieces[5]);
         } catch (e) { return }
 
-        renderDropdown(msgItem.target, data, msgItem.options);
+        renderDropdown(msgItem.target, data.suggestions, msgItem.options);
 
       };
       ws.onopen = function() {};
@@ -803,7 +803,7 @@
             }
           }  
         }
-      }
+      };
 
       // Parse the Entity
       if (typeof autocompleteAttributes !== 'undefined') {
