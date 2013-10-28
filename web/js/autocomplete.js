@@ -40,16 +40,13 @@
       return options;
     };
 
-    //global websocket object
+    //autocomplete global websocket object
     var ws;
-    //global msg item
+    //autocomplete global msg item
     var msgItem;
-    function msgInfo(target, options) {
-      this.target = target;
-      this.options = options;
-    }
+
     function setMsgInfo(target, options) {
-      msgItem = new msgInfo(target, options);
+      msgItem = {'target':target, 'options':options};
     }
 
     if (!ws){
@@ -62,14 +59,22 @@
             xmlhttp=new XMLHttpRequest()
             xmlhttp.onreadystatechange=function() {
               if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-                hsKey=xmlhttp.responseText.match(/[^:]*/);
-                ws = new WebSocket("ws:"+url+"websocket/"+ hsKey[0]);
+                var hsKey=xmlhttp.responseText.match(/[^:]*/);
+                var protocol = window.location.protocol;
+                if (protocol == 'http:'){
+                  protocol = 'ws:';
+                } else {
+                  protocol = 'wss:'
+                }
+                ws = new WebSocket(protocol+url+"websocket/"+ hsKey[0]);
                 setwsEvents();
               }
             }
             xmlhttp.open("POST", url, false);
             xmlhttp.send();
-          } catch (e) { alert('Unable to establish websocket.') }
+          } catch (e) { 
+            safeLog('Unable to establish a websocket.'); 
+          }
         break;
       }
     };
@@ -93,7 +98,9 @@
 
       };
       ws.onopen = function() {};
-      ws.onclose = function() {alert('Socket has closed - refresh browser to restablish.')};
+      ws.onclose = function() {
+        safeLog('Socket has closed - refresh browser to re-establish.');
+      };
     };
 
     function checkForInputMatch(input,options) {
@@ -410,28 +417,29 @@
         if (options.webSocket){
           setMsgInfo(target, options);
           sendSocketMessage();
-          return;
-        }
+        } else {
 
-        var timeIndex = new Date().getTime().toString();
+          var timeIndex = new Date().getTime().toString();
  
-        callbackRD = function (data) {
-          renderDropdown(target, data, options);
-          var scriptTag = document.getElementById(timeIndex);
-          if (scriptTag !== null) {
-            scriptTag.parentNode.removeChild(scriptTag);
+          callbackRD = function (data) {
+            renderDropdown(target, data, options);
+            var scriptTag = document.getElementById(timeIndex);
+            if (scriptTag !== null) {
+              scriptTag.parentNode.removeChild(scriptTag);
+            }
           }
-        }
 
-        var dropdownElement = document.createElement('script');
-        dropdownElement.type = "text/javascript";
-        dropdownElement.src = url+"&callback=callbackRD&"+timeIndex;
-        dropdownElement.id = timeIndex
-        document.getElementsByTagName('head')[0].appendChild(dropdownElement);
+          var dropdownElement = document.createElement('script');
+          dropdownElement.type = "text/javascript";
+          dropdownElement.src = url+"&callback=callbackRD&"+timeIndex;
+          dropdownElement.id = timeIndex
+          document.getElementsByTagName('head')[0].appendChild(dropdownElement);
+        }
       } else {
         removeDropdown(target);
       }
-    }
+    };
+    
     function renderDropdown(target, data, options) {
       removeDropdown(target);
       var dropdown = "";
@@ -913,6 +921,12 @@
       classes.push('glg-autocomplete-focus')            
       element.setAttribute('class',classes.join(" "));
       return true;
+    };
+    
+    function safeLog(msg){
+      if (typeof console.log != undefined) {
+        console.log(msg);
+      }
     };
 
     if (typeof CustomEvent === 'object') {
