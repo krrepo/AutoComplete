@@ -53,8 +53,10 @@
       var options = getOptions();
       //see if socketIO is true for any Object
       for (var i=0; i<options.length; i++) {
-        if (options[i].webSocket)
+        var webSocket = options[i].webSocket;
+        if (webSocket) {
           var url = options[i].source;
+          var uri = url.match(/^\/\/([^/]*)\//)[0];
           try {
             xmlhttp=new XMLHttpRequest()
             xmlhttp.onreadystatechange=function() {
@@ -66,16 +68,17 @@
                 } else {
                   protocol = 'wss:'
                 }
-                ws = new WebSocket(protocol+url+"websocket/"+ hsKey[0]);
+                ws = new WebSocket(protocol+uri+"socket.io/1/websocket/"+ hsKey[0]);
                 setwsEvents();
               }
             }
-            xmlhttp.open("POST", url, false);
+            xmlhttp.open("POST", uri+"socket.io/1/", false);
             xmlhttp.send();
           } catch (e) { 
             safeLog('Unable to establish a websocket.'); 
           }
         break;
+        }
       }
     };
     //set ws events
