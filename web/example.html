@@ -17,7 +17,7 @@
 <form class="form-horizontal">
     <div class="control-group">
         <label  class="control-label" for="states" class="span4">States (Markup) &nbsp; </label>
-        <input name="states_markup" id="states_markup" glg-autocomplete-entities="cm:CM" glg-autocomplete-websocket="true" glg-autocomplete-source="//10.45.205.80/socket.io/1/" glg-autocomplete-multiSelect="false">
+        <input name="states_markup" id="states_markup" glg-autocomplete-entities="cm:CM" glg-autocomplete-websocket="true" glg-autocomplete-source="//10.45.205.80/typeahead/trie/" glg-autocomplete-multiSelect="false">
     </div>
     <div class="control-group">
         <label class="control-label" for="states">States (Method) &nbsp; </label>
@@ -63,16 +63,15 @@
   options = [
   {
     'entities':{'cm':'CM'},
-    'source':'//10.45.205.80/socket.io/1/',
+    'source':'//10.45.205.80/typeahead/trie/',
     'element':document.getElementById('states_method'),
-    'webSocket':true
+    'webSocket':false
   },{
     'entities':{'cm':'CM'},
-    'source':'//10.45.205.80/socket.io/1/',
+    'source':'//10.45.205.80/typeahead/trie/',
     'element':document.getElementById('states_multiselect'),
     //'updateSource':'//localhost:8080/typeahead/selected/',
-    'multiSelect':true,
-    'webSocket':true
+    'multiSelect':true
   }];
   glg.autocomplete(options);
 </script>
