@@ -55,24 +55,18 @@
       for (var i=0; i<options.length; i++) {
         var webSocket = options[i].webSocket;
         if (webSocket) {
-          var url = options[i].source;
-          var uri = url.match(/^\/\/([^/]*)\//)[0];
+          var url = options[i].source.match(/[^\/\/?]?.*/)[0];
+          var protocol = getProtocol(options[i].source);
           try {
             xmlhttp=new XMLHttpRequest()
             xmlhttp.onreadystatechange=function() {
               if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-                var hsKey=xmlhttp.responseText.match(/[^:]*/);
-                var protocol = window.location.protocol;
-                if (protocol == 'http:'){
-                  protocol = 'ws:';
-                } else {
-                  protocol = 'wss:'
-                }
-                ws = new WebSocket(protocol+uri+"socket.io/1/websocket/"+ hsKey[0]);
+                var hsKey=xmlhttp.responseText.match(/[^:]*/)[0];
+                ws = new WebSocket(protocol+url+"websocket/"+ hsKey);
                 setwsEvents();
               }
             }
-            xmlhttp.open("POST", uri+"socket.io/1/", false);
+            xmlhttp.open("POST", url, false);
             xmlhttp.send();
           } catch (e) { 
             safeLog('Unable to establish a websocket.'); 
@@ -81,6 +75,22 @@
         }
       }
     };
+
+    function getProtocol(url){
+      var httpProtocol = url.match(/^(https?:)?/)[0];
+      var wsProtocol = url.match(/^(wss?:)?/)[0];
+      if ( httpProtocol.length > 1 )
+        return httpProtocol;
+      if ( wsProtocol.length  > 1)
+        return wsProtocol;
+
+      var curProtocol = window.location.protocol;
+      if (curProtocol === 'http:')
+        return 'ws:';
+      else
+        return 'wss:';
+    };
+    
     //set ws events
     function setwsEvents(){
       ws.onmessage = function (evt) {
