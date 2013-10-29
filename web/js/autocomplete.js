@@ -44,11 +44,9 @@
     var ws;
     //autocomplete global msg item
     var msgItem;
-
     function setMsgInfo(target, options) {
       msgItem = {'target':target, 'options':options};
-    }
-
+    };
     if (!ws){
       var options = getOptions();
       //see if socketIO is true for any Object
@@ -75,7 +73,6 @@
         }
       }
     };
-
     function getProtocol(url){
       var httpProtocol = url.match(/^(https?:)?/)[0];
       var wsProtocol = url.match(/^(wss?:)?/)[0];
@@ -90,7 +87,6 @@
       else
         return 'wss:';
     };
-    
     //set ws events
     function setwsEvents(){
       ws.onmessage = function (evt) {
@@ -114,7 +110,6 @@
         safeLog('Socket has closed - refresh browser to re-establish.');
       };
     };
-
     function checkForInputMatch(input,options) {
       input = getObjectFromId(input);
       options.element = getObjectFromId(options.element);
@@ -128,7 +123,6 @@
         setTheEvents(options[i].element,inputEvents);
       }
     };
- 
     // ******
     // Events
     // ******
@@ -234,7 +228,6 @@
         }
       }
     };
- 
     // **************
     // Event Handlers
     // **************
@@ -391,7 +384,6 @@
         }
       }
     };
- 
     // ******
     // Render
     // ******
