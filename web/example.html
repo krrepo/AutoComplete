@@ -17,7 +17,7 @@
 <form class="form-horizontal">
     <div class="control-group">
         <label  class="control-label" for="states" class="span4">States (Markup) &nbsp; </label>
-        <input name="states_markup" id="states_markup" glg-autocomplete-entities="cm:CM" glg-autocomplete-websocket="true" glg-autocomplete-source="//localhost:8080/typeahead/trie/" glg-autocomplete-multiSelect="false">
+        <input name="states_markup" id="states_markup" glg-autocomplete-entities="state:States" glg-autocomplete-websocket="false" glg-autocomplete-source="//localhost:8080/typeahead/trie/" glg-autocomplete-multiSelect="false">
     </div>
     <div class="control-group">
         <label class="control-label" for="states">States (Method) &nbsp; </label>
@@ -57,18 +57,17 @@
 &lt;input name="cm_names" id="cm_names" <strong>glg-autocomplete-entities</strong>="org:Organizations;state:States" <strong>glg-autocomplete-source</strong>="//localhost:8080/typeahead/trie/" <strong>glg-autocomplete-updateSource</strong>="//localhost:8080/typeahead/update/">
 </pre>
 <p>Note that there is no glg-autocomplete-element attribute in the above code, as this is implicity included.</p>
-
 <p>To enable websocket support - set the webSocket option to true and change the source option(ex:'source':'//localhost:8100/socket.io/1/').</p>
 </body>
 <script>
   options = [
   {
-    'entities':{'cm':'CM'},
+    'entities':{'state':'States'},
     'source':'//localhost:8080/typeahead/trie/',
     'element':document.getElementById('states_method'),
     'webSocket':false
   },{
-    'entities':{'cm':'CM'},
+    'entities':{'state':'States'},
     'source':'//localhost:8080/typeahead/trie/',
     'element':document.getElementById('states_multiselect'),
     //'updateSource':'//localhost:8080/typeahead/selected/',
