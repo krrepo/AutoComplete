@@ -354,9 +354,13 @@
     }
     function renderDropdown(target, data, options) {
       removeDropdown(target);
-      var dropdown = "";
+      var dropdownAsdf = [];
       if (typeof options.specialFirstRow !== 'undefined') {
-        dropdown += '<li glg-autocomplete-firstRow class="glg-autocomplete-item glg-autocomplete-focus">'+options.specialFirstRow()+'</li>'
+        var dropdownRowAsdf = document.createElement('li')
+        dropdownRowAsdf.setAttribute('glg-autocomplete-item','');
+        dropdownRowAsdf.setAttribute('glg-autocomplete-focus','');
+        dropdownRowAsdf.innerHTML = options.specialFirstRow();
+        dropdownAsdf.push(dropdownRowAsdf);
       }
       var entityCount = 0;
       var drawAddToItem = true;
@@ -372,11 +376,16 @@
           if (typeof entities !== 'undefined') {
             if (entities.length > 0) {
               if (entityCount > 1 || options.showCategoryNames) {
-                dropdown += '  <li class="glg-autocomplete-category">'+options.entities[entityData]+'</li>';
+                var dropdownRowAsdf = document.createElement('li');
+                dropdownRowAsdf.classList.add('glg-autocomplete-category');
+                dropdownRowAsdf.innerHTML = options.entities[entityData]
+                dropdownAsdf.push(dropdownRowAsdf);
               }
               // Generate the dropdown code
               for (var i=0; i<entities.length; i++) {
-                dropdown += '  <li class="glg-autocomplete-item" role="presentation">';
+                var dropdownRowAsdf = document.createElement('li');
+                dropdownRowAsdf.classList.add('glg-autocomplete-item');
+                dropdownRowAsdf.setAttribute('role','presentation');
                 entityDataHit = true;
 
                 display = entities[i].display;
@@ -388,13 +397,19 @@
                   display = value
                 }
                 if (typeof options.rowRenderer === 'function') {
-                  dropdown += options.rowRenderer(i, key, value, display);
+                  dropdownRowAsdf.appendChild(options.rowRenderer(i, key, value, display));
                 } else {
-                  dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" glg-autocomplete-key="'+ key +'" glg-autocomplete-value="'+ value +'" glg-autocomplete-display="'+ display +'" tabindex="-1">' + display + '</a>';
- 
+                  var anchor = document.createElement('a');
+                  anchor.setAttribute('id','ui-id-' + i);
+                  anchor.classList.add('glg-autocomplete-anchor');
+                  anchor.setAttribute('glg-autocomplete-key',key);
+                  anchor.setAttribute('glg-autocomplete-value',value);
+                  anchor.setAttribute('glg-autocomplete-display',cm);
+                  anchor.setAttribute('tabindex','-1');
+                  dropdownRowAsdf.appendChild(anchor);
                 }
  
-                dropdown += '  </li>';
+                dropdownAsdf.push(dropdownRowAsdf);
                 if (entities[i].value.toLowerCase() == target.value.toLowerCase()) {
                   drawAddToItem = false;
                 }
@@ -406,22 +421,37 @@
  
       // Clear the Dropdown Code if No Entities Were Populated
       if (!entityDataHit) {
-        dropdown = '';
+        dropdownAsdf.innerHTML = '';
       }
  
       // Create the 'Add to' Menu
       if (options.updateSource && drawAddToItem) {
-        dropdown += '  <li class="glg-autocomplete-category">Click to Add</li>';
-        dropdown += '  <li class="glg-autocomplete-item" role="presentation">';
-        dropdown += '    <a id="ui-id-' + i + '" class="glg-autocomplete-anchor" tabindex="-1">' + target.value + '</a>';
-        dropdown += '  </li>';
+ 
+        var dropdownRowAsdf = document.createELement('li');
+        dropdownRowAsdf.classList.add('glg-autocomplete-category');
+        dropdownRowAsdf.innerHTML = 'Click to Add';
+        dropdownAsdf.push(dropdownRowAsdf);
+ 
+        var dropdownRowAsdf = document.createELement('li');
+        dropdownRowAsdf.classList.add('glg-autocomplete-item');
+        dropdownRowAsdf.setAttribute('role','presentation');
+        var anchor = document.createElement('a');
+        anchor.setAttribute('id','ui-id-' + i);
+        anchor.classList.add('glg-autocomplete-anchor')
+        anchor.setAttribute('tabindex','-1');
+        anchor.innerHTML = target.value;
+        dropdownAsdf.push(dropdownRowAsdf);
+
       }
  
-      if(dropdown.length > 0) {
+      if(dropdownAsdf.length > 0) {
         // Decorate the Dropdown Node
         var dropdownNode = document.createElement("ul");
         dropdownNode.setAttribute('class','glg-autocomplete-list');
-        dropdownNode.innerHTML = dropdown;      
+        for (var i = 0; i < dropdownAsdf.length; i++) {
+          dropdownNode.appendChild(dropdownAsdf[i]);
+        }
+ 
         positionDropdown(dropdownNode,target,true);
 
         // Set the Unique Identifiers if They Do Not Already Exist
