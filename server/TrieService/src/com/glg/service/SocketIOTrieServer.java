@@ -41,9 +41,25 @@ public class SocketIOTrieServer {
 	Timer timer;
 	Map<String, Trie> tries;
 	
-	public SocketIOTrieServer(){
-		tries = new HashMap<String, Trie>();
-	}
+    // Private constructor prevents instantiation from other classes
+    private SocketIOTrieServer() { 
+    	tries = new HashMap<String, Trie>();
+    }
+
+    /**
+    * SingletonHolder is loaded on the first execution of Singleton.getInstance() 
+    * or the first access to SingletonHolder.INSTANCE, not before.
+    */
+    private static class SingletonHolder { 
+            public static final SocketIOTrieServer INSTANCE = new SocketIOTrieServer();
+    }
+
+    public static SocketIOTrieServer getInstance() {
+            return SingletonHolder.INSTANCE;
+    }
+	
+	
+
 	
 	public void loadMaps(){
 		String filename = "";
@@ -63,7 +79,7 @@ public class SocketIOTrieServer {
 	
 	
 	public static void main(String[] args)  throws InterruptedException {
-		SocketIOTrieServer tries = new SocketIOTrieServer();
+		SocketIOTrieServer tries = SocketIOTrieServer.getInstance();
 		tries.loadMaps();
 		TrieDataListner listner = new TrieDataListner(tries.tries);
 		logger.info("Loaded tries");
@@ -84,7 +100,7 @@ public class SocketIOTrieServer {
         server.stop();
 	}
 	
-	private void loadFile(File f){
+	public void loadFile(File f){
 		String[] row = null;
 		try{
 			

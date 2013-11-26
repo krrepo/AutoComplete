@@ -62,16 +62,15 @@
 <script>
   options = [
   {
-    'entities':{'state':'States'},
-    'source':'//localhost:8080/typeahead/trie/',
-    'element':document.getElementById('states_method'),
-    'webSocket':false
+    'entities':{'cm':'Council Members'},
+    'source':'//localhost:8100/socket.io/1/',
+    'element':document.getElementById('states_markup'),
+    'webSocket':true
   },{
-    'entities':{'state':'States'},
-    'source':'//localhost:8080/typeahead/trie/',
-    'element':document.getElementById('states_multiselect'),
-    //'updateSource':'//localhost:8080/typeahead/selected/',
-    'multiSelect':true
+    'entities':{'reload_cm':'Council Members'},
+    'source':'//localhost:8100/socket.io/1/',
+    'element':document.getElementById('states_method'),
+    'webSocket':true
   }];
   glg.autocomplete(options);
 </script>
