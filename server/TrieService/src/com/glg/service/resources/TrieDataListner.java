@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.AckRequest;
@@ -30,33 +31,26 @@ public class TrieDataListner<T> implements DataListener<T> {
 	public void onData(SocketIOClient client, T arg1, AckRequest ackRequest) {
 		TrieObject to = (TrieObject) arg1;
 		System.out.println("in on data");
-		System.out.println("Entity:" + to.getEntity() + " prefix:" + to.getPrefix());
-		String entity = to.getEntity();
-		if (entity!=null && tries.containsKey(entity)){
-			String key = clean(to.getPrefix());
-			Trie trie = tries.get(entity);
-			List<Entry<String, String, String>> values = trie.getSuggestions(key);
-			if (values.size() > 0){
-				//create output object and send data back
-				TrieObject out = new TrieObject();
-				Map<String, List<Entry<String, String, String>>> map = new HashMap<String, List<Entry<String, String, String>>>();
-				map.put(entity, values);
-				out.setSuggestions(map);
-				System.out.println("Got valid suggestions");
-				client.sendJsonObject(out, new AckCallback<String>(String.class) {
-                    @Override
-                    public void onSuccess(String result) {
-                        System.out.println("ack from client: data: " + result);
-                    }
-				});
-                
+		String key = clean(to.getPrefix());
+		String entityString = to.getEntity();
+		String[] entities = entityString.split(",");
+		//create output object
+		Map<String, List<Entry<String, String, String>>> output = new HashMap<String, List<Entry<String, String, String>>>();
+		for (String entity : entities){
+			if (key!=null && tries.containsKey(entity)){			
+				Trie trie = tries.get(entity);
+				List<Entry<String, String, String>> values = trie.getSuggestions(key);
+				output.put(entity, values);
 			}
-		}else{
-			//send back empty data message
-			System.out.println("Entity is null or not contained in trie");
 		}
-		
-	}
+		System.out.println("Got valid suggestions");
+		client.sendJsonObject(output, new AckCallback<String>(String.class) {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("ack from client: data: " + result);
+            }
+		});
+	}	
 	
 	private String clean(String str) {
 		String cleaned = punct.matcher(str).replaceAll("").toLowerCase();
