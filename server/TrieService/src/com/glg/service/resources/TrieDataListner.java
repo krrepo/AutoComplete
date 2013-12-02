@@ -44,7 +44,6 @@ public class TrieDataListner<T> implements DataListener<T> {
 			String key = clean(to.getPrefix());
 			Trie trie = tries.get(entity);
 			List<Entry<String, String, String>> values = trie.getSuggestions(key);
-			if (values.size() > 0){
 				//create output object and send data back
 				TrieObject out = new TrieObject();
 				Map<String, List<Entry<String, String, String>>> map = new HashMap<String, List<Entry<String, String, String>>>();
@@ -56,9 +55,7 @@ public class TrieDataListner<T> implements DataListener<T> {
                     public void onSuccess(String result) {
                         System.out.println("ack from client: data: " + result);
                     }
-				});
-                
-			}
+				});                
 		}else{
 			//send back empty data message
 			System.out.println("Entity is null or not contained in trie");
