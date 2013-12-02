@@ -103,7 +103,7 @@
         } catch (e) { 
           return;
         }
-        renderDropdown(msgItem.target, data.suggestions, msgItem.options);
+        renderDropdown(msgItem.target, data, msgItem.options);
       };
       ws.onopen = function() {};
       ws.onclose = function() {
@@ -402,10 +402,12 @@
       var options = getOptions(getTarget(event));
       var url = options.source + "?value="+encodeURIComponent(target.value);
       var entity = "";
+      var socketEntityList = "";
       for (optionItem in options.entities) {
         if (options.entities.hasOwnProperty(optionItem)) {
           entity = encodeURIComponent(optionItem)
           url+="&entity="+entity;
+          socketEntityList+=entity+",";
         }
       }
 
@@ -413,7 +415,7 @@
         sendSocketMessage = function () {
           var msg=target.value;
           var jsonObject = {'@class': 'com.glg.service.TrieObject',
-            entity:entity,
+            entity:socketEntityList,
             prefix:msg};
           ws.send('4:::'+JSON.stringify(jsonObject));
         }
