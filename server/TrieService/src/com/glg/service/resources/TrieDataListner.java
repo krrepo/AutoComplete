@@ -25,8 +25,8 @@ public class TrieDataListner<T> implements DataListener<T> {
 	String PATH = "data/";
 	static Map<String, Trie> tries;
 
-	public TrieDataListner(Map<String, Trie>tries){
-		this.tries = tries;
+	public TrieDataListner(Map<String, Trie>triesArg){
+		tries = triesArg;
 	}
 	
 	@Override
@@ -34,35 +34,32 @@ public class TrieDataListner<T> implements DataListener<T> {
 						
 		TrieObject to = (TrieObject) arg1;
 		System.out.println("in on data");
-		System.out.println("Entity:" + to.getEntity() + " prefix:" + to.getPrefix());
-		String entity = to.getEntity();
-		if ( entity.contains("reload") ){
-			 asyncServiceMethod(entity); 
-			return;
+		String key = clean(to.getPrefix());
+        String entityString = to.getEntity();
+        String[] entities = entityString.split(",");
+
+		//create output object
+		Map<String, List<Entry<String, String, String>>> output = new HashMap<String, List<Entry<String, String, String>>>();
+		for (String entity : entities){
+			if ( entity.contains("reload") ){
+				 asyncServiceMethod(entity);
+				 continue;
+			}
+			if (key!=null && tries.containsKey(entity)){			
+				Trie trie = tries.get(entity);
+				List<Entry<String, String, String>> values = trie.getSuggestions(key);
+				output.put(entity, values);
+			}					
 		}
-		if (entity!=null && tries.containsKey(entity)){
-			String key = clean(to.getPrefix());
-			Trie trie = tries.get(entity);
-			List<Entry<String, String, String>> values = trie.getSuggestions(key);
-				//create output object and send data back
-				TrieObject out = new TrieObject();
-				Map<String, List<Entry<String, String, String>>> map = new HashMap<String, List<Entry<String, String, String>>>();
-				map.put(entity, values);
-				out.setSuggestions(map);
-				System.out.println("Got valid suggestions");
-				client.sendJsonObject(out, new AckCallback<String>(String.class) {
-                    @Override
-                    public void onSuccess(String result) {
-                        System.out.println("ack from client: data: " + result);
-                    }
-				});                
-		}else{
-			//send back empty data message
-			System.out.println("Entity is null or not contained in trie");
-		}
-		
-	}
-	
+		System.out.println("Got valid suggestions");
+		client.sendJsonObject(output, new AckCallback<String>(String.class) {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("ack from client: data: " + result);
+            }
+		});
+	}	
+
 	public void asyncServiceMethod(final String entity){ 
         Runnable task = new Runnable() {
         SocketIOTrieServer s = SocketIOTrieServer.getInstance();
