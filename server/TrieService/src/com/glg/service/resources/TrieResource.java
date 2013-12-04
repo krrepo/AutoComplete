@@ -58,9 +58,7 @@ public class TrieResource {
 	static final Pattern punct= Pattern.compile("\\p{Punct}");
 	static final Pattern diacritics = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 	static final Pattern dynamic = Pattern.compile("_dynamic", Pattern.CASE_INSENSITIVE);
-	//static final long SAVE_FREQUENCY = 1000 * 60 * 60 * 2;
-	//test save every 3 minutes
-	long SAVE_FREQUENCY = 1000 * 60 * 60;
+    long SAVE_FREQUENCY = 1000 * 60 * 60;
 	String PATH = "data/";
 	int NUM_RESULTS = 5;
 	int MAX_LIST_SIZE = 1000;
@@ -118,8 +116,12 @@ public class TrieResource {
 				CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(tempFile))));
 				writeCSV(t.getTrie(), writer);
 				writer.close();
-							
-				if (tempFile.renameTo(new File(filename + ".csv.gz"))) {
+				
+				File oldFile = new File(filename + ".csv.gz");
+				if (oldFile.exists()) {
+					oldFile.delete();
+				}
+				if (tempFile.renameTo(oldFile)) {
 					logger.info("Temp file renamed to " + filename + ".csv.gz");
 				} else {
 					logger.error("Temp file rename failed for " + filename + "-temp" + ".csv.gz");
