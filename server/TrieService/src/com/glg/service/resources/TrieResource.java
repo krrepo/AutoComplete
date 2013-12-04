@@ -109,14 +109,26 @@ public class TrieResource {
 				if (f.exists()){
 					f.delete();
 				}
+								
+				File tempFile = new File(filename + "-temp" + ".csv.gz");
+				if (tempFile.exists()){
+					tempFile.delete();
+				}
 				
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(new File(filename+".csv.gz")))));
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(tempFile))));
 				writeCSV(t.getTrie(), writer);
 				writer.close();
+							
+				if (tempFile.renameTo(new File(filename + "csv.gz"))) {
+					logger.info("Temp file renamed to " + filename + "csv.gz");
+				} else {
+					logger.error("Temp file rename failed for " + filename + "-temp" + ".csv.gz");
+					tempFile.delete();
+				}
 				
 				if (t.isCache()){
 					t.writeCache(new File(filename+".obj"));
-				}
+				}				
 			}
 			logger.info("Saved tries");
 		}catch(Exception e){
