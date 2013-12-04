@@ -119,8 +119,8 @@ public class TrieResource {
 				writeCSV(t.getTrie(), writer);
 				writer.close();
 							
-				if (tempFile.renameTo(new File(filename + "csv.gz"))) {
-					logger.info("Temp file renamed to " + filename + "csv.gz");
+				if (tempFile.renameTo(new File(filename + ".csv.gz"))) {
+					logger.info("Temp file renamed to " + filename + ".csv.gz");
 				} else {
 					logger.error("Temp file rename failed for " + filename + "-temp" + ".csv.gz");
 					tempFile.delete();
