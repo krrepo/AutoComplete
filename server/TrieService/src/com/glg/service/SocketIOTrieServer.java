@@ -57,10 +57,7 @@ public class SocketIOTrieServer {
     public static SocketIOTrieServer getInstance() {
             return SingletonHolder.INSTANCE;
     }
-	
-	
-
-	
+			
 	public void loadMaps(){
 		String filename = "";
 		try{
@@ -100,7 +97,23 @@ public class SocketIOTrieServer {
         server.stop();
 	}
 	
-	public void loadFile(File f){
+	public void loadFile(final File f){ 
+        Runnable task = new Runnable() {
+
+            @Override 
+            public void run() { 
+                try {
+                	loadEntityFile(f);
+
+                } catch (Exception ex) { 
+                    //handle error which cannot be thrown back 
+                } 
+            } 
+        }; 
+        new Thread(task, "loadEntityFileThread").start(); 
+    }
+	
+	public void loadEntityFile(File f){
 		String[] row = null;
 		try{
 			
@@ -186,81 +199,81 @@ public class SocketIOTrieServer {
 		  while( ch != StringCharacterIterator.DONE ){
 		    boolean f=false;
 		    String hex = (Integer.toHexString((int)ch));
-//		    "Ê" ==> "E"
+//		    "��" ==> "E"
 		    if(  hex.equalsIgnoreCase("ca") ){sb.append("E");f=true;}
-//		    "È" ==> "E"
+//		    "��" ==> "E"
 		    if(  hex.equalsIgnoreCase("c8") ){sb.append("E");f=true;}
-//		    "ë" ==> "e"
+//		    "��" ==> "e"
 		    if(  hex.equalsIgnoreCase("eb") ){sb.append("e");f=true;}
-//		    "é" ==> "e"
+//		    "��" ==> "e"
 		    if(  hex.equalsIgnoreCase("e9") ){sb.append("e");f=true;}
-//		    "è" ==> "e"
+//		    "��" ==> "e"
 		    if(  hex.equalsIgnoreCase("e8") ){sb.append("e");f=true;}
-//		    "Â" ==> "A"
+//		    "��" ==> "A"
 		    if(  hex.equalsIgnoreCase("c2") ){sb.append("A");f=true;}
-//		    "ß" ==> "ss"
+//		    "��" ==> "ss"
 		    if(  hex.equalsIgnoreCase("df") ){sb.append("ss");f=true;}
-//		    "Ç" ==> "C"
+//		    "��" ==> "C"
 		    if(  hex.equalsIgnoreCase("c7") ){sb.append("C");f=true;}
-//		    "ª" ==> ""
+//		    "��" ==> ""
 		    if(  hex.equalsIgnoreCase("aa") ){sb.append("");f=true;}
-//		    "º" ==> ""
+//		    "��" ==> ""
 		    if(  hex.equalsIgnoreCase("ba") ){sb.append("");f=true;}
-//		    "Ñ" ==> "N"
+//		    "��" ==> "N"
 		    if(  hex.equalsIgnoreCase("d1") ){sb.append("N");f=true;}
-//		    "É" ==> "E"
+//		    "��" ==> "E"
 		    if(  hex.equalsIgnoreCase("c9") ){sb.append("E");f=true;}
-//		    "Ä" ==> "A"
+//		    "��" ==> "A"
 		    if(  hex.equalsIgnoreCase("c4") ){sb.append("A");f=true;}
-//		    "Å" ==> "A"
+//		    "��" ==> "A"
 		    if(  hex.equalsIgnoreCase("c5") ){sb.append("A");f=true;}
-//		    "ä" ==> "a"
+//		    "��" ==> "a"
 		    if(  hex.equalsIgnoreCase("e4") ){sb.append("a");f=true;}
-//		    "Ü" ==> "U"
+//		    "��" ==> "U"
 		    if(  hex.equalsIgnoreCase("dc") ){sb.append("U");f=true;}
-//		    "ö" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("f6") ){sb.append("o");f=true;}
-//		    "ü" ==> "u"
+//		    "��" ==> "u"
 		    if(  hex.equalsIgnoreCase("fc") ){sb.append("u");f=true;}
-//		    "á" ==> "a"
+//		    "��" ==> "a"
 		    if(  hex.equalsIgnoreCase("e1") ){sb.append("a");f=true;}
-//		    "É" ==> "E"
+//		    "��" ==> "E"
 		    if(  hex.equalsIgnoreCase("c9") ){sb.append("E");f=true;}
-//		    "ó" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("f3") ){sb.append("o");f=true;}
-//		    "Ó" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("d3") ){sb.append("O");f=true;}
-//		    "ò" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("f2") ){sb.append("o");f=true;}
-//		    "Ò" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("d2") ){sb.append("O");f=true;}
-//		    "ô" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("f4") ){sb.append("o");f=true;}
-//		    "Ô" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("d4") ){sb.append("O");f=true;}
-//		    "ő" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("151") ){sb.append("o");f=true;}
-//		    "Ő" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("150") ){sb.append("O");f=true;}
-//		    "õ" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("f5") ){sb.append("o");f=true;}
-//		    "Õ" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("d5") ){sb.append("O");f=true;}
-//		    "ø" ==> "oe"
+//		    "��" ==> "oe"
 		    if(  hex.equalsIgnoreCase("f8") ){sb.append("oe");f=true;}
-//		    "Ø" ==> "OE"
+//		    "��" ==> "OE"
 		    if(  hex.equalsIgnoreCase("d8") ){sb.append("OE");f=true;}		    
-//		    "ō" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("14d") ){sb.append("o");f=true;}
-//		    "Ō" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("14c") ){sb.append("O");f=true;}
-//		    "ơ" ==> "o"
+//		    "��" ==> "o"
 		    if(  hex.equalsIgnoreCase("1a1") ){sb.append("o");f=true;}
-//		    "Ơ" ==> "O"
+//		    "��" ==> "O"
 		    if(  hex.equalsIgnoreCase("1a0") ){sb.append("O");f=true;}
-//		    "ö" ==> "oe"
+//		    "��" ==> "oe"
 		    if(  hex.equalsIgnoreCase("f6") ){sb.append("oe");f=true;}
-//		    "Ö" ==> "OE"
+//		    "��" ==> "OE"
 		    if(  hex.equalsIgnoreCase("d6") ){sb.append("OE");f=true;}
 		    		    
 		    if(!f){
