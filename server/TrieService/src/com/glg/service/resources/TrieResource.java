@@ -93,65 +93,68 @@ public class TrieResource {
 		}
 	}
 	
-	public void saveMapsToFile(){
+	public void saveMapsToFile(Map.Entry<String, Trie> entry){
 		try{
-			for (Map.Entry<String, Trie> entry : tries.entrySet()){
-				Trie t = entry.getValue();
-				String filename = PATH+entry.getKey();
-				if (!t.isNonMutable()){
-					filename+="_dynamic";
-				}
-				
-				//delete .csv files and keep around .csv.gz files
-				File f = new File(filename+".csv");
-				if (f.exists()){
-					f.delete();
-				}
-								
-				File tempFile = new File(filename + "-temp" + ".csv.gz");
-				if (tempFile.exists()){
-					tempFile.delete();
-				}
-				
-				CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(tempFile))));
-				writeCSV(t.getTrie(), writer);
-				writer.close();
-				
-				File oldFile = new File(filename + ".csv.gz");
-				if (oldFile.exists()) {
-					oldFile.delete();
-				}
-				if (tempFile.renameTo(oldFile)) {
-					logger.info("Temp file renamed to " + filename + ".csv.gz");
-				} else {
-					logger.error("Temp file rename failed for " + filename + "-temp" + ".csv.gz");
-					tempFile.delete();
-				}
-				
-				if (t.isCache()){
-					t.writeCache(new File(filename+".obj"));
-				}				
+
+			Trie t = entry.getValue();
+			String filename = PATH+entry.getKey();
+			if (!t.isNonMutable()){
+				filename+="_dynamic";
 			}
-			logger.info("Saved tries");
+			
+			//delete .csv files and keep around .csv.gz files
+			File f = new File(filename+".csv");
+			if (f.exists()){
+				f.delete();
+			}
+							
+			File tempFile = new File(filename + "-temp" + ".csv.gz");
+			if (tempFile.exists()){
+				tempFile.delete();
+			}
+			
+			CSVWriter writer = new CSVWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(tempFile))));
+			writeCSV(t.getTrie(), writer);
+			writer.close();
+			
+			File oldFile = new File(filename + ".csv.gz");
+			if (oldFile.exists()) {
+				oldFile.delete();
+			}
+			if (tempFile.renameTo(oldFile)) {
+				logger.info("Temp file renamed to " + filename + ".csv.gz");
+			} else {
+				logger.error("Temp file rename failed for " + filename + "-temp" + ".csv.gz");
+				tempFile.delete();
+			}
+			
+			if (t.isCache()){
+				t.writeCache(new File(filename+".obj"));
+			}				
+
+		    logger.info("Saved trie for entity: " + filename);
+		    
 		}catch(Exception e){
 			logger.error("Error saving map files:" +e);
 		}
 	}
 	
-	public void saveMaps(){ 
-        Runnable task = new Runnable() {
-
-            @Override 
-            public void run() { 
-                try {
-                	saveMapsToFile( );
+	public void saveMaps(){
+		
+		for (final Map.Entry<String, Trie> entry : tries.entrySet()){
+            Runnable task = new Runnable() {
+                @Override 
+                public void run() { 
+                    try {	
+                	    saveMapsToFile(entry);
 
                 } catch (Exception ex) { 
                     //handle error which cannot be thrown back 
                 } 
             } 
         }; 
-        new Thread(task, "saveMapsThread").start(); 
+        new Thread(task, "saveMapsThread").start();
+		}
     }
 	
 	public void loadFile(final File f){ 
