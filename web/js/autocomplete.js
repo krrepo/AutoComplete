@@ -40,39 +40,46 @@
       return options;
     };
 
-    //autocomplete global websocket object
+    //autocomplete global websocket objects
     var ws;
+    var wsBuffer = '';
     //autocomplete global msg item
     var msgItem;
     function setMsgInfo(target, options) {
       msgItem = {'target':target, 'options':options};
     };
-    if (!ws){
-      var options = getOptions();
-      //see if socketIO is true for any Object
-      for (var i=0; i<options.length; i++) {
-        var webSocket = options[i].webSocket;
-        if (webSocket) {
-          var url = options[i].source.match(/[^\/\/?]?.*/)[0];
-          var protocol = getProtocol(options[i].source);
-          try {
-            xmlhttp=new XMLHttpRequest()
-            xmlhttp.onreadystatechange=function() {
-              if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-                var hsKey=xmlhttp.responseText.match(/[^:]*/)[0];
-                ws = new WebSocket(protocol+url+"websocket/"+ hsKey);
-                setwsEvents();
+    function initializeWebSocket() {
+      if (!ws){
+        var options = getOptions();
+        //see if socketIO is true for any Object
+        for (var i=0; i<options.length; i++) {
+          var webSocket = options[i].webSocket;
+          if (webSocket) {
+            var url = options[i].source.match(/[^\/\/?]?.*/)[0];
+            var protocol = getProtocol(options[i].source);
+            try {
+              xmlhttp=new XMLHttpRequest()
+              xmlhttp.onreadystatechange=function() {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                  var hsKey=xmlhttp.responseText.match(/[^:]*/)[0];
+                  ws = new WebSocket(protocol+url+"websocket/"+ hsKey);
+                  setwsEvents();
+                  if (wsBuffer.length > 0) {
+                    ws.send('4:::'+jsonString);
+                  }
+                }
               }
+              xmlhttp.open("POST", url, true);
+              xmlhttp.send();
+            } catch (e) { 
+              safeLog('Unable to establish a websocket.'); 
             }
-            xmlhttp.open("POST", url, false);
-            xmlhttp.send();
-          } catch (e) { 
-            safeLog('Unable to establish a websocket.'); 
+          break;
           }
-        break;
         }
-      }
+      };
     };
+    initializeWebSocket();
     function getProtocol(url){
       var httpProtocol = url.match(/^(https?:)?/)[0];
       var wsProtocol = url.match(/^(wss?:)?/)[0];
@@ -417,7 +424,16 @@
           var jsonObject = {'@class': 'com.glg.service.TrieObject',
             entity:socketEntityList,
             prefix:msg};
-          ws.send('4:::'+JSON.stringify(jsonObject));
+          var jsonString = JSON.stringify(jsonObject);
+          if (ws.readyState === 1) {
+            ws.send('4:::'+jsonString);
+          } else {
+            wsBuffer = jsonString;
+            if (ws.readyState === 3 || ws.readyState === 2) {
+              ws = undefined;
+              initializeWebSocket();
+            }
+          }
         }
         
         if (options.webSocket){
